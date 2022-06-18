@@ -1,7 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
 import { Buffer } from "node:buffer";
-import { SpotifyTokenResponse } from "./types";
+import { SpotifyTokenResponse } from "./types/spotify";
 
 const AuthorizationToken = Buffer.from(
   `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`,

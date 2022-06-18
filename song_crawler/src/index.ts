@@ -1,35 +1,39 @@
-import readLine from "readline";
-import "dotenv/config";
 import saveNewReleases from "scripts/saveNewReleases";
 import setSpotifyAccessToken from "scripts/setSpotifyAccessToken";
+import reader from "readline-sync";
+import format from "date-fns/format";
+import getNewReleasedAlbumIds from "scripts/getNewReleaseAlbumIds";
+import isEmpty from "lodash/isEmpty";
 
-const rl = readLine.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const todayDefault = format(new Date(), "yyyy-MM-dd");
 
 const main = async () => {
   console.log("Setting your spotify access token...");
   await setSpotifyAccessToken();
 
-  rl.question(`Which job do you wanna do?\n 1. get New Releases.\n`, async (answer) => {
-    switch (answer) {
-      case "1": {
-        let offset = 0;
-        while (1) {
-          const hasNext = await saveNewReleases(offset);
-          if (!hasNext) break;
-          offset += 50;
-        }
-        rl.close();
-        break;
-      }
-      default: {
-        console.error("Invalid answer.");
-        rl.close();
-      }
+  const todayInput = reader.question(
+    `Enter today's date in (yyyy-MM-dd) format. default date is : ${todayDefault}`
+  );
+  const today = isEmpty(todayInput) ? todayDefault : todayInput;
+
+  const job = reader.question(
+    `Which job do you wanna do?\n1.get New Releases-(${today}).\n2.get New Released Album Ids-(${today})\n`
+  );
+
+  switch (job) {
+    case "1": {
+      saveNewReleases(today);
+      break;
     }
-  });
+    case "2": {
+      const albumIds = await getNewReleasedAlbumIds(today);
+      console.log(albumIds);
+      break;
+    }
+    default: {
+      console.error("Invalid answer.");
+    }
+  }
 };
 
 main();
