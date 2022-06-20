@@ -1,39 +1,29 @@
-import saveNewReleases from "scripts/saveNewReleases";
+import getArtistMap from "scripts/getArtistMap";
+import getNewReleasedAlbumIds from "scripts/getNewReleasedAlbumIds";
+import getNewReleasedTrackIds from "scripts/getNewReleasedTrackIds";
+import getAudioInfos from "scripts/getAudioInfos";
 import setSpotifyAccessToken from "scripts/setSpotifyAccessToken";
-import reader from "readline-sync";
-import format from "date-fns/format";
-import getNewReleasedAlbumIds from "scripts/getNewReleaseAlbumIds";
-import isEmpty from "lodash/isEmpty";
-
-const todayDefault = format(new Date(), "yyyy-MM-dd");
+import getTracks from "scripts/getTracks";
+import saveAudioInfos from "scripts/saveAudioInfos";
 
 const main = async () => {
-  console.log("Setting your spotify access token...");
   await setSpotifyAccessToken();
 
-  const todayInput = reader.question(
-    `Enter today's date in (yyyy-MM-dd) format. default date is : ${todayDefault}`
-  );
-  const today = isEmpty(todayInput) ? todayDefault : todayInput;
+  // new releases에서 출시 날짜가 어제랑 동일한 것 찾아서 배열로 해당 앨범 id 저장
+  const newlyReleasedAlbumIds = await getNewReleasedAlbumIds();
 
-  const job = reader.question(
-    `Which job do you wanna do?\n1.get New Releases-(${today}).\n2.get New Released Album Ids-(${today})\n`
-  );
+  // 저장한 앨범 id를 가지고 앨범 조회 해서 수록곡 트랙 id 저장
+  const newReleasedTrackIds = await getNewReleasedTrackIds(newlyReleasedAlbumIds);
 
-  switch (job) {
-    case "1": {
-      saveNewReleases(today);
-      break;
-    }
-    case "2": {
-      const albumIds = await getNewReleasedAlbumIds(today);
-      console.log(albumIds);
-      break;
-    }
-    default: {
-      console.error("Invalid answer.");
-    }
-  }
+  const newReleasedTracks = await getTracks(newReleasedTrackIds);
+
+  // 아티스트 정보 맵 생성하기
+  const artistMap = await getArtistMap(newReleasedTracks);
+
+  // 수록곡 트랙 id를 가지고 audio_features 구하기
+  const audioInfos = await getAudioInfos(newReleasedTracks, artistMap);
+  // 기존 데이터셋을 가져온다음에 새로운 데이터 추가해서 저장.
+  saveAudioInfos(audioInfos);
 };
 
 main();
