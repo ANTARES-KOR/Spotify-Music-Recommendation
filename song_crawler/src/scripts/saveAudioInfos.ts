@@ -4,9 +4,33 @@ import * as fs from "fs";
 import csv from "csv-parser";
 
 import { isEmpty } from "lodash";
-import { convertObjectArrayToCSV, saveDataAsCSV, saveDataAsJSON } from "utils";
+import { convertObjectArrayToCSV, saveDataAsCSV } from "utils";
 
 import type { AudioInfo } from "types/spotify";
+
+const Headers = [
+  "id",
+  "artist_name",
+  "track_name",
+  "album_name",
+  "artist_genre",
+  "release_date",
+  "artist_popularity",
+  "track_popularity",
+  "artist_followers",
+  "danceability",
+  "energy",
+  "key",
+  "loudness",
+  "speechiness",
+  "acousticness",
+  "instrumentalness",
+  "liveness",
+  "valence",
+  "tempo",
+  "duration_ms",
+  "time_signature",
+];
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.S3_ACCESS_KEY as string,
@@ -18,16 +42,19 @@ const s3 = new AWS.S3({
 const saveAudioInfos = (audioInfos: AudioInfo[]) => {
   if (isEmpty(audioInfos)) return;
 
+  if (process.env.NODE_ENV === "production") {
+  }
+
   const existingDataset: any[] = [];
   const stream = fs
     .createReadStream(`${__dirname}/../../data/dataset/existing.csv`, {
       encoding: "utf-8",
     })
+    // csv 파일을 읽어야 하는데, 데이터를
     .pipe(csv());
 
   return new Promise((resolve, reject) => {
     stream.on("data", (data) => {
-      console.log(data);
       existingDataset.push(data);
     });
     stream.on("error", (err) => {
