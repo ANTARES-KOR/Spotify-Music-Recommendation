@@ -22,7 +22,10 @@ export type SpotifyTokenResponse = {
   expires_in: number;
 };
 
-export type AudioInfo = AudioFeature & {
+export type AudioInfo = Omit<
+  AudioFeature,
+  "track_href" | "type" | "uri" | "mode" | "analysis_url"
+> & {
   artist_name: string;
   artist_genre: string[];
   release_date: string;

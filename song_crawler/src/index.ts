@@ -23,7 +23,7 @@ const main = async () => {
   // 수록곡 트랙 id를 가지고 audio_features 구하기
   const audioInfos = await getAudioInfos(newReleasedTracks, artistMap);
   // 기존 데이터셋을 가져온다음에 새로운 데이터 추가해서 저장.
-  saveAudioInfos(audioInfos);
+  await saveAudioInfos(audioInfos);
 };
 
 main();

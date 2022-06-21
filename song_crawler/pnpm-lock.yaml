@@ -8,7 +8,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.27.1
   aws-sdk: ^2.1157.0
   axios: ^0.27.2
-  csv-stringify: ^6.1.0
+  csv-parser: ^3.0.0
   date-fns: ^2.28.0
   dotenv: ^16.0.1
   eslint: ^8.17.0
@@ -22,7 +22,7 @@ specifiers:
 dependencies:
   aws-sdk: 2.1157.0
   axios: 0.27.2
-  csv-stringify: 6.1.0
+  csv-parser: 3.0.0
   date-fns: 2.28.0
   lodash: 4.17.21
   readline-sync: 1.4.10
@@ -435,8 +435,12 @@ packages:
       which: 2.0.2
     dev: true
 
-  /csv-stringify/6.1.0:
-    resolution: {integrity: sha512-rdBqiy77TczvhGlpLHyoph2adMs6WMnmQY4PBRqeIWykI1FLnVCppnRdso8faGj2+eN7izk9YlbFyZkOrL9rAQ==}
+  /csv-parser/3.0.0:
+    resolution: {integrity: sha512-s6OYSXAK3IdKqYO33y09jhypG/bSDHPuyCme/IdEHfWpLf/jKcpitVFyOC6UemgGk8v7Q5u2XE0vvwmanxhGlQ==}
+    engines: {node: '>= 10'}
+    hasBin: true
+    dependencies:
+      minimist: 1.2.6
     dev: false
 
   /date-fns/2.28.0:
@@ -892,7 +896,6 @@ packages:
 
   /minimist/1.2.6:
     resolution: {integrity: sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==}
-    dev: true
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
