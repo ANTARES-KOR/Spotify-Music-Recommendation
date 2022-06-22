@@ -1,40 +1,10 @@
 import "dotenv/config";
-import AWS from "aws-sdk";
-import * as fs from "fs";
-
 import { isEmpty } from "lodash";
-import { convertObjectArrayToCSV, saveDataAsCSV, saveDataAsJSON } from "utils";
-
+import { saveDataAsJSON } from "utils";
 import type { AudioInfo } from "types/spotify";
+import { readDataFromS3, saveDataToS3 } from "./S3scripts";
 
-const Headers = [
-  "id",
-  "artist_name",
-  "track_name",
-  "album_name",
-  "artist_genre",
-  "release_date",
-  "artist_popularity",
-  "track_popularity",
-  "artist_followers",
-  "danceability",
-  "energy",
-  "key",
-  "loudness",
-  "speechiness",
-  "acousticness",
-  "instrumentalness",
-  "liveness",
-  "valence",
-  "tempo",
-  "duration_ms",
-  "time_signature",
-];
-
-const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_ACCESS_KEY as string,
-  secretAccessKey: process.env.S3_SECRET_KEY as string,
-});
+const FILE_NAME = "dataset";
 
 const parseAudioData = (dataset: any[]) => {
   return dataset.map((item) => ({
@@ -63,20 +33,24 @@ const parseAudioData = (dataset: any[]) => {
   }));
 };
 
-const saveAudioInfos = (audioInfos: AudioInfo[]) => {
+const saveAudioInfos = async (audioInfos: AudioInfo[]) => {
   if (isEmpty(audioInfos)) return;
 
   if (process.env.NODE_ENV === "production") {
   }
 
-  const existing_data_raw = fs.readFileSync(
-    `${__dirname}/../../data/dataset/existing.json`,
-    "utf-8"
-  );
-  const existing_dataset = JSON.parse(existing_data_raw);
+  const existing_data_raw = await readDataFromS3(FILE_NAME);
+
+  const existing_dataset = JSON.parse(existing_data_raw as string);
   const new_dataset = parseAudioData([...existing_dataset, ...audioInfos]);
 
   saveDataAsJSON(new_dataset, { name: "new.json", type: "dataset" });
+
+  const new_dataset_json = JSON.stringify(new_dataset);
+
+  const data_location = await saveDataToS3(new_dataset_json, FILE_NAME);
+
+  console.log(data_location);
 };
 
 export default saveAudioInfos;

@@ -1,6 +1,5 @@
 import { writeFileSync } from "fs";
 import format from "date-fns/format";
-import sub from "date-fns/sub";
 
 type SaveDataAsJSON = (data: any, { name, type }: { name: string; type: string }) => void;
 
