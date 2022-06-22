@@ -1,6 +1,5 @@
 import { Artist, AudioFeature, SpotifyAPI, Track } from "SpotifyAPI";
 import * as _ from "lodash";
-import { saveDataAsJSON } from "utils";
 
 const getAudioInfos = async (tracks: Track[], artistMap: Map<string, Artist>) => {
   const trackChunks = _.chunk(tracks, 50);
@@ -21,7 +20,7 @@ const getAudioInfos = async (tracks: Track[], artistMap: Map<string, Artist>) =>
     })
     .filter(Boolean)
     .map((features, index) => {
-      const { mode, analysis_url, track_href, uri, type, ...feature } = features as AudioFeature;
+      const { mode, analysis_url, track_href, type, ...feature } = features as AudioFeature;
 
       return {
         artist_name: tracks[index].artists[0].name,

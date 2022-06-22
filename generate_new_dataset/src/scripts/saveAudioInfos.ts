@@ -4,7 +4,7 @@ import * as fs from "fs";
 import csv from "csv-parser";
 
 import { isEmpty } from "lodash";
-import { convertObjectArrayToCSV, saveDataAsCSV } from "utils";
+import { convertObjectArrayToCSV, saveDataAsCSV, saveDataAsJSON } from "utils";
 
 import type { AudioInfo } from "types/spotify";
 
@@ -62,8 +62,7 @@ const saveAudioInfos = (audioInfos: AudioInfo[]) => {
     });
     stream.on("end", () => {
       // 두개의 오브젝트를 한가지 타입으로 통합하여 저장
-      const csvString = convertObjectArrayToCSV([...existingDataset, ...audioInfos]);
-      saveDataAsCSV(csvString, { name: "new.csv", type: "dataset" });
+      saveDataAsJSON([...existingDataset, ...audioInfos], { name: "new.json", type: "dataset" });
       resolve(null);
     });
   });
