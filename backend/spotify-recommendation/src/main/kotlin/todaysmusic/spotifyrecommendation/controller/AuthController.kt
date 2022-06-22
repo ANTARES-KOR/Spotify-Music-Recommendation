@@ -27,7 +27,8 @@ class AuthController() {
     @Value("\${client.secret}")
     private var clientSecret: String? = null
 
-    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-user-code")
+//    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-user-code")
+    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/auth/callback/spotify")
     private var code: String = ""
 
     private var spotifyApi: SpotifyApi? = null
@@ -47,7 +48,7 @@ class AuthController() {
         buildSpotifyApi()
 
         var authorizationCodeUriRequest: AuthorizationCodeUriRequest = spotifyApi!!.authorizationCodeUri()
-            .scope("user-read-private, user-read-email, user-top-read")
+            .scope("user-read-private, user-read-email, user-top-read, streaming")
             .show_dialog(true)
             .build()
         val uri: URI = authorizationCodeUriRequest.execute()
@@ -58,7 +59,8 @@ class AuthController() {
         return redirectView
     }
 
-    @GetMapping("get-user-code")
+//    @GetMapping("get-user-code")
+    @GetMapping("auth/callback/spotify")
     fun getUserCodes(
         @RequestParam("code") userCode: String,
         response: HttpServletResponse
@@ -75,8 +77,8 @@ class AuthController() {
         map["refresh_token"] = authorizationCodeCredentials.refreshToken
         map["scope"] = authorizationCodeCredentials.scope
         map["expires_in"] = authorizationCodeCredentials.expiresIn
-
-        response.sendRedirect("http://localhost:8080/api/gohome")
+        println(authorizationCodeCredentials.accessToken)
+//        response.sendRedirect("http://youtube.com")
         return map
     }
 
