@@ -1,7 +1,8 @@
 import "dotenv/config";
 import axios from "axios";
 import { Buffer } from "node:buffer";
-import { SpotifyTokenResponse } from "./types/spotify";
+import { SpotifyTokenResponse } from "../types/spotify";
+import { AlbumTracksResponse, ArtistsResponse, AudioFeaturesResponse, Track } from "./types";
 
 const AuthorizationToken = Buffer.from(
   `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`,
@@ -65,11 +66,14 @@ export const getSeveralTracks = async ({ trackIds: ids }: { trackIds: string[] }
 // max 100
 export const getAudioFeatures = async ({ trackIds: ids }: { trackIds: string[] }) => {
   try {
-    const response = await axios.get("https://api.spotify.com/v1/audio-features", {
-      params: {
-        ids: ids.join(","),
-      },
-    });
+    const response = await axios.get<AudioFeaturesResponse>(
+      "https://api.spotify.com/v1/audio-features",
+      {
+        params: {
+          ids: ids.join(","),
+        },
+      }
+    );
     return response.data;
   } catch (e) {
     console.error(e);
@@ -85,6 +89,58 @@ export const getAlbums = async ({ albumIds }: { albumIds: string[] }) => {
         market: "KR",
       },
     });
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getAlbumTracks = async ({ albumId }: { albumId: string }) => {
+  try {
+    const response = await axios.get<AlbumTracksResponse>(
+      `https://api.spotify.com/v1/albums/${albumId}/tracks`,
+      {
+        params: {
+          market: "KR",
+          limit: 50,
+        },
+      }
+    );
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getAudioFeaturesForTracks = async ({ trackIds }: { trackIds: string[] }) => {
+  try {
+    const response = await axios.get("https://api.spotify.com/v1/audio-features", {
+      params: {
+        ids: trackIds.join(","),
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getArtists = async ({ artistIds }: { artistIds: string[] }) => {
+  try {
+    const response = await axios.get<ArtistsResponse>("https://api.spotify.com/v1/artists", {
+      params: {
+        ids: artistIds.join(","),
+      },
+    });
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getTrack = async ({ trackId }: { trackId: string }) => {
+  try {
+    const response = await axios.get<Track>(`https://api.spotify.com/v1/tracks/${trackId}`);
     return response.data;
   } catch (e) {
     console.error(e);

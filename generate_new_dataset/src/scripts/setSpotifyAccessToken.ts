@@ -1,14 +1,14 @@
 import axios from "axios";
-import { getSpotifyAccessToken } from "SpotifyAPI";
 import fs from "fs";
+import { SpotifyAPI } from "SpotifyAPI";
 import { saveDataAsJSON } from "utils";
 
 const saveAndGetSpotifyAccessToken = async () => {
-  const token_data = await getSpotifyAccessToken();
+  const token_data = await SpotifyAPI.getSpotifyAccessToken();
   if (token_data) {
     // 서버에서 액세스 토큰 받고 나면 그거 json에 저장하기
     saveDataAsJSON(
-      { ...token_data, expires_at: Date.now() + (token_data!.expires_in - 60) * 1000 },
+      { ...token_data, expires_at: Date.now() + (token_data?.expires_in - 60) * 1000 },
       { name: "spotify_token.json", type: "token" }
     );
     return token_data.access_token;
