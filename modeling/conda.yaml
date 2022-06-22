@@ -1,0 +1,12 @@
+name: spotify
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8.13
+  - pip
+  - pip:
+    - mlflow>=1.0
+    - nltk
+    - numpy
+    - pandas
+    - sklearn

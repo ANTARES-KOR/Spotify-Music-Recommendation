@@ -1,0 +1,15 @@
+artifact_uri: ./mlruns/0/9e7c961d68124c3f9123db2698e3da97/artifacts
+end_time: 1655902339888
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 9e7c961d68124c3f9123db2698e3da97
+run_uuid: 9e7c961d68124c3f9123db2698e3da97
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1655902339881
+status: 4
+tags: []
+user_id: yonjae

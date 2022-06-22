@@ -1,0 +1,15 @@
+name: recommenderSystem
+
+conda_env: conda.yaml
+
+entry_points:
+  cbr:
+    parameters:
+      data_path: {type: str, default: "./data/track/track_data.csv"}
+      tfidf_path: {type: str, default: 20}
+      music: {type: int, default: 1}
+      mood: {type: int, default: 1}
+      speed: {type: int, default: 1}
+      emotion: {type: int, default: 1}
+    command: "python contentBasedRecommenderSystem.py --data_path {data_path} --tfidf_path {tfidf_path}
+                             --music {music} --mood {mood} --speed {speed} --emotion {emotion}"

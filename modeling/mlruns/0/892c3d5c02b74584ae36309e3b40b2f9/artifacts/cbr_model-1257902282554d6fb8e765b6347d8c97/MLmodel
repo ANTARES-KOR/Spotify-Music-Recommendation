@@ -1,0 +1,12 @@
+artifact_path: cbr_model-1257902282554d6fb8e765b6347d8c97
+flavors:
+  python_function:
+    cloudpickle_version: 2.1.0
+    env: conda.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.8.13
+mlflow_version: 1.26.1
+model_uuid: 0cde19f016fc4e2ea30304e3a20d4506
+run_id: 892c3d5c02b74584ae36309e3b40b2f9
+utc_time_created: '2022-06-22 13:33:04.183577'
