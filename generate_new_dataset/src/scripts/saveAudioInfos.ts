@@ -1,7 +1,6 @@
 import "dotenv/config";
 import AWS from "aws-sdk";
 import * as fs from "fs";
-import csv from "csv-parser";
 
 import { isEmpty } from "lodash";
 import { convertObjectArrayToCSV, saveDataAsCSV, saveDataAsJSON } from "utils";
@@ -37,7 +36,32 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.S3_SECRET_KEY as string,
 });
 
-// TODO : mode, analysis_url, track_href, uri, type은 빼도 됨
+const parseAudioData = (dataset: any[]) => {
+  return dataset.map((item) => ({
+    id: item.id,
+    artist_name: item.artist_name,
+    track_name: item.track_name,
+    album_name: item.album_name,
+    artist_genre: item.artist_genre,
+    release_date: item.release_date,
+    artist_popularity: item.artist_popularity,
+    track_popularity: item.track_popularity,
+    artist_follwers: item.artist_followers,
+    danceability: item.danceability,
+    energy: item.energy,
+    key: item.key,
+    loudeness: item.loudeness,
+    speechiness: item.speechiness,
+    acousticness: item.acousticness,
+    instrumentalness: item.instrumentalness,
+    liveness: item.liveness,
+    valence: item.valence,
+    tempo: item.tempo,
+    duration_ms: item.duration_ms,
+    time_signature: item.time_signature,
+    uri: item.uri ?? "",
+  }));
+};
 
 const saveAudioInfos = (audioInfos: AudioInfo[]) => {
   if (isEmpty(audioInfos)) return;
@@ -45,27 +69,14 @@ const saveAudioInfos = (audioInfos: AudioInfo[]) => {
   if (process.env.NODE_ENV === "production") {
   }
 
-  const existingDataset: any[] = [];
-  const stream = fs
-    .createReadStream(`${__dirname}/../../data/dataset/existing.csv`, {
-      encoding: "utf-8",
-    })
-    // csv 파일을 읽어야 하는데, 데이터를
-    .pipe(csv());
+  const existing_data_raw = fs.readFileSync(
+    `${__dirname}/../../data/dataset/existing.json`,
+    "utf-8"
+  );
+  const existing_dataset = JSON.parse(existing_data_raw);
+  const new_dataset = parseAudioData([...existing_dataset, ...audioInfos]);
 
-  return new Promise((resolve, reject) => {
-    stream.on("data", (data) => {
-      existingDataset.push(data);
-    });
-    stream.on("error", (err) => {
-      reject(err);
-    });
-    stream.on("end", () => {
-      // 두개의 오브젝트를 한가지 타입으로 통합하여 저장
-      saveDataAsJSON([...existingDataset, ...audioInfos], { name: "new.json", type: "dataset" });
-      resolve(null);
-    });
-  });
+  saveDataAsJSON(new_dataset, { name: "new.json", type: "dataset" });
 };
 
 export default saveAudioInfos;
