@@ -3,7 +3,7 @@ services:
   newsong_crawler:
     build: .
     env_file:
-      - fileName=.env
+      - .env
     environment:
       - NODE_ENV=development
     volumes:
