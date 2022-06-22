@@ -3,26 +3,29 @@ package todaysmusic.spotifyrecommendation.domain
 import lombok.Getter
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.Id
+import javax.persistence.*
 
 
 @Entity
-@Getter
 class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0
 
-    var display_name: String = ""
+    @Column(name = "display_name")
+    var displayName: String = ""
 
     var email: String = ""
 
-    var access_token: String = ""
+    @Column(name = "access_token")
+    var accessToken: String = ""
 
-    var refresh_token: String = ""
+    @Column(name = "refresh_token")
+    var refreshToken: String = ""
 
+    @Column(name = "expires_at")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    var expires_at: LocalDateTime = LocalDateTime.of(0,0,0,0,0,0)
+    var expiresAt: LocalDateTime? = null
 
 }

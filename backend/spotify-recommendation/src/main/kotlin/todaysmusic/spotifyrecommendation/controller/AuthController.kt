@@ -47,7 +47,7 @@ class AuthController() {
 
         buildSpotifyApi()
 
-        var authorizationCodeUriRequest: AuthorizationCodeUriRequest = spotifyApi!!.authorizationCodeUri()
+        val authorizationCodeUriRequest: AuthorizationCodeUriRequest = spotifyApi!!.authorizationCodeUri()
             .scope("user-read-private, user-read-email, user-top-read, streaming")
             .show_dialog(true)
             .build()
@@ -87,6 +87,9 @@ class AuthController() {
         val pg:ModelAndView = ModelAndView("home")
         return pg
     }
+
+
+
 
 }
 
