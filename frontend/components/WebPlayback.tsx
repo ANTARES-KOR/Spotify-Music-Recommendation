@@ -1,6 +1,18 @@
 import { ReactElement, useEffect, useState } from "react";
+import { css, jsx } from "@emotion/react";
+
+import {
+  play,
+  pause,
+  addTrack,
+  nextTrack,
+  getState,
+} from "../core/api/spotifysdk";
+import Player from "./Player";
+import Playlist from "./Playlist";
 
 type Props = {
+  uris: string[];
   token: string;
 };
 
@@ -24,12 +36,23 @@ const track: Track = {
   artists: [{ name: "" }],
 };
 
-const WebPlayback: WebPlayback = ({ token }) => {
+const WebPlayback: WebPlayback = ({ uris, token }) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
   const [device_id, setId] = useState("");
+
+  const onPlay = () => {
+    play({ spotify_uri: uris[0], device_id, playerInstance: player });
+  };
+
+  const onPause = () => {
+    pause({ device_id, playerInstance: player });
+  };
+  const onNextTrack = () => {
+    nextTrack({ device_id, playerInstance: player });
+  };
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -58,7 +81,6 @@ const WebPlayback: WebPlayback = ({ token }) => {
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
       });
-
       player.addListener("player_state_changed", (state) => {
         if (!state) {
           return;
@@ -77,105 +99,24 @@ const WebPlayback: WebPlayback = ({ token }) => {
     };
   }, [token]);
 
-  const play = ({
-    spotify_uri,
-    playerInstance: {
-      _options: { getOAuthToken },
-    },
-  }) => {
-    getOAuthToken((access_token: string) => {
-      fetch(
-        `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({ uris: [spotify_uri] }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-    });
-  };
-  const pause = ({
-    playerInstance: {
-      _options: { getOAuthToken },
-    },
-  }) => {
-    getOAuthToken((access_token: string) => {
-      fetch(
-        `https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-    });
-  };
-
   return (
-    <>
-      <div className="container">
-        <div className="main-wrapper">
-          <img
-            src={current_track.album.images[0].url}
-            className="now-playing__cover"
-            alt=""
-          />
-
-          <div className="now-playing__side">
-            <div className="now-playing__name">{current_track.name}</div>
-
-            <div className="now-playing__artist">
-              {current_track.artists[0].name}
-            </div>
-          </div>
-        </div>
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            player.previousTrack();
-          }}
-        >
-          &lt;&lt;
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            play({
-              playerInstance: player,
-              spotify_uri: "spotify:track:7xGfFoTpQ2E7fRF5lN10tr",
-            });
-          }}
-        >
-          PLAY
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            pause({
-              playerInstance: player,
-            });
-          }}
-        >
-          PAUSE
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            player.nextTrack();
-          }}
-        >
-          &gt;&gt;
-        </button>
+    player && (
+      <div
+        css={css`
+          position: relative;
+          width: 70%;
+          margin: auto;
+        `}
+      >
+        <Playlist />
+        <Player
+          onPlay={onPlay}
+          onPause={onPause}
+          onNextTrack={onNextTrack}
+          current_track={current_track}
+        />
       </div>
-    </>
+    )
   );
 };
 

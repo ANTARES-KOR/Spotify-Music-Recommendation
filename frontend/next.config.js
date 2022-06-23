@@ -1,6 +1,17 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-}
-
-module.exports = nextConfig
+module.exports = () => {
+  const rewrites = () => {
+    return [
+      {
+        source: "/api/login",
+        destination: "http://localhost:8080",
+      },
+      {
+        source: "/ducks",
+        destination: "https://random-d.uk/api/random",
+      },
+    ];
+  };
+  return {
+    rewrites,
+  };
+};
