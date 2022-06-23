@@ -1,4 +1,4 @@
-package todaysmusic.spotifyrecommendation.Api.Domain
+package todaysmusic.spotifyrecommendation.domain
 
 class FilterInitData(
     val trackList: List<String>,

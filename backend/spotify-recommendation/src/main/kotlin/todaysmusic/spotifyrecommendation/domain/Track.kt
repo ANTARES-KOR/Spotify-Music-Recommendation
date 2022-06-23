@@ -1,6 +1,6 @@
-package todaysmusic.spotifyrecommendation.Api.Domain
+package todaysmusic.spotifyrecommendation.domain
 
-import todaysmusic.spotifyrecommendation.Api.Domain.Enum.Preference
+import todaysmusic.spotifyrecommendation.domain.Enum.Preference
 import javax.persistence.*
 import javax.transaction.Transactional
 

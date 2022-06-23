@@ -1,19 +1,18 @@
-package todaysmusic.spotifyrecommendation.Api.Controller
+package todaysmusic.spotifyrecommendation.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import todaysmusic.spotifyrecommendation.Api.Domain.UserFilter
-import todaysmusic.spotifyrecommendation.Api.Domain.FilterInitData
-import todaysmusic.spotifyrecommendation.Api.Domain.Track
-import todaysmusic.spotifyrecommendation.Api.Repository.UserFilterRepository
-import todaysmusic.spotifyrecommendation.Api.Service.TrackService
+import todaysmusic.spotifyrecommendation.domain.UserFilter
+import todaysmusic.spotifyrecommendation.domain.FilterInitData
+import todaysmusic.spotifyrecommendation.domain.Track
+import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
+import todaysmusic.spotifyrecommendation.service.TrackService
 
 @RestController
 class FrontEndController(

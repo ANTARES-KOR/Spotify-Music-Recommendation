@@ -1,4 +1,4 @@
-package todaysmusic.spotifyrecommendation.Api.requestTest
+package todaysmusic.spotifyrecommendation.requestTest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpEntity

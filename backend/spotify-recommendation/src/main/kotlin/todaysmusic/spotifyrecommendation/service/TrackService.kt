@@ -1,10 +1,10 @@
-package todaysmusic.spotifyrecommendation.Api.Service
+package todaysmusic.spotifyrecommendation.service
 
 import org.springframework.stereotype.Service
-import todaysmusic.spotifyrecommendation.Api.Domain.Track
-import todaysmusic.spotifyrecommendation.Api.Domain.UserFilter
-import todaysmusic.spotifyrecommendation.Api.Repository.PreferenceTrackRepository
-import todaysmusic.spotifyrecommendation.Api.Repository.UserFilterRepository
+import todaysmusic.spotifyrecommendation.domain.Track
+import todaysmusic.spotifyrecommendation.domain.UserFilter
+import todaysmusic.spotifyrecommendation.repository.PreferenceTrackRepository
+import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
 
 @Service
 class TrackService(

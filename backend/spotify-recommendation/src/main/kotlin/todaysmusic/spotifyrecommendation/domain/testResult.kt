@@ -1,4 +1,4 @@
-package todaysmusic.spotifyrecommendation.Api.Domain
+package todaysmusic.spotifyrecommendation.domain
 
 class testResult (
     val userId : Int,

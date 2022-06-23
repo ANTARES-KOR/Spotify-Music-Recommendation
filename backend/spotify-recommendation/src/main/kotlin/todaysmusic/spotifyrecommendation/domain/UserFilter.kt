@@ -1,4 +1,4 @@
-package todaysmusic.spotifyrecommendation.Api.Domain
+package todaysmusic.spotifyrecommendation.domain
 
 import javax.persistence.*
 import javax.transaction.Transactional
