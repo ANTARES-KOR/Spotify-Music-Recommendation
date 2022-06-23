@@ -6,5 +6,5 @@ import todaysmusic.spotifyrecommendation.domain.Member
 
 @Repository
 interface MemberRepository: JpaRepository<Member, Int> {
-    fun findMemberByAccessToken() : Member?
+    fun findMemberByAccessToken(accessToken: String) : Member?
 }
