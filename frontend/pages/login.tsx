@@ -4,12 +4,13 @@ import { css, jsx } from "@emotion/react";
 const LoginPage = () => {
   const router = useRouter();
 
-  const tmpToken =
-    "BQAKRQR_4XRpRkcmNVY4me5dGZGDL3ZDYCnhWuRMGJ7tjnGPTQTd7CrdW5jmXLEx7H_xPdYgfKLGrXCfBeroFvbA8tqfRH-cZczRM-rl2XEyiGZSGXR8QPU1qZtkYGjwiGDtju9D8yW6D3l30dqs75hKEdTEgpnTwnkmir8fQM4ceoxcijd0gP7xAwIGw5ylusIWZZCo26we83JUoQVId4EXG-8";
+  // const tmpToken =
+  //   "BQAKRQR_4XRpRkcmNVY4me5dGZGDL3ZDYCnhWuRMGJ7tjnGPTQTd7CrdW5jmXLEx7H_xPdYgfKLGrXCfBeroFvbA8tqfRH-cZczRM-rl2XEyiGZSGXR8QPU1qZtkYGjwiGDtju9D8yW6D3l30dqs75hKEdTEgpnTwnkmir8fQM4ceoxcijd0gP7xAwIGw5ylusIWZZCo26we83JUoQVId4EXG-8";
 
   const onClick = () => {
     fetch("/api/login")
       .then((res) => {
+        console.log(res);
         localStorage.setItem("access_token", JSON.stringify(tmpToken));
       })
       .then(() => {
