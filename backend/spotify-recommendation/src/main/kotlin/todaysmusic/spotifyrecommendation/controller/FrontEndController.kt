@@ -3,11 +3,7 @@ package todaysmusic.spotifyrecommendation.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import todaysmusic.spotifyrecommendation.domain.UserFilter
 import todaysmusic.spotifyrecommendation.domain.FilterInitData
 import todaysmusic.spotifyrecommendation.domain.Track
@@ -15,6 +11,7 @@ import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
 import todaysmusic.spotifyrecommendation.service.TrackService
 
 @RestController
+@RequestMapping("/api")
 class FrontEndController(
     @Autowired val userFilterRepository: UserFilterRepository,
     @Autowired val trackService: TrackService
@@ -22,16 +19,29 @@ class FrontEndController(
 
     @GetMapping("/getFilterInitTrack")
     fun responseInitTrack(): ResponseEntity<Any>{
-        val stringList: List<String> = listOf(
-            "spotify:track:4Dvkj6JhhA12EX05fT7y2e",
-            "spotify:track:75FEaRjZTKLhTrFGsfMUXR",
-            "spotify:track:6Sq7ltF9Qa7SNFBsV5Cogx",
-            "spotify:track:6xGruZOHLs39ZbVccQTuPZ",
-            "spotify:track:3k3NWokhRRkEPhCzPmV8TW"
-        )
-        var answerFilterData = FilterInitData(stringList)
-        return ResponseEntity.ok().body(answerFilterData)
+        return ResponseEntity.ok().body(trackService.getInitFilterList())
     }
+
+    @GetMapping("/getRecommandTrackList")
+    fun responseRecommandTrackList(
+        @RequestParam code : String
+    ): Any{
+        // 코드 확인
+        println(code)
+        // 토큰 처리
+        // 유저가 필터를 선택한 적이 있다면
+        if(code  == "hi"){
+            // model을 통해서 가져오기
+            return ResponseEntity.ok().body("success")
+        }else{
+            // 없다면 error
+//            return ResponseEntity.noContent().
+//            he.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.ok().body("non-success")
+        }
+
+    }
+
 
     @PostMapping("/saveUserFilter")
     fun saveUserFilter(
@@ -59,15 +69,7 @@ class FrontEndController(
         }
     }
 
-    @PostMapping("/putPreferenceTrack")
-    fun putPreferenceTrack(
-        @RequestParam token : String,
-        @RequestBody track : Track
-    ) : ResponseEntity<String>{
-        //토큰이 유효 하다면 && Email을 꺼내 줘야 함
-        trackService.putTrackPreference("bell1902@naver.com",track)
-        return ResponseEntity.ok().body("success")
-    }
+
 
 
 }
