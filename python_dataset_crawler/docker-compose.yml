@@ -1,0 +1,8 @@
+version: "3"
+services:
+  dataset_crawler:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
