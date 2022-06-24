@@ -1,6 +1,12 @@
 import { ReactElement, useEffect, useState } from "react";
+import { css, jsx } from "@emotion/react";
+import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
+import Player from "./Player";
+import Playlist from "./Playlist";
+import { useRouter } from "next/router";
 
 type Props = {
+  uris: string[];
   token: string;
 };
 
@@ -24,12 +30,48 @@ const track: Track = {
   artists: [{ name: "" }],
 };
 
-const WebPlayback: WebPlayback = ({ token }) => {
+const WebPlayback: WebPlayback = ({ data, token }) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
+  const [current_position, setPosition] = useState(0);
   const [device_id, setId] = useState("");
+  const router = useRouter();
+
+  const onPlay = (uri: string | undefined, is_new: boolean) => {
+    console.log("onPlay clicked", uri);
+    console.log("position arg in play method", current_position);
+    if (uri === undefined) {
+      play({
+        spotify_uri: data[0].uri,
+        device_id,
+        position: current_position,
+        playerInstance: player,
+      });
+    }
+    play({
+      spotify_uri: uri,
+      device_id,
+      position: is_new ? 0 : current_position,
+      playerInstance: player,
+    });
+  };
+
+  const onPause = () => {
+    console.log("onPause clicked", device_id);
+    pause({ device_id, playerInstance: player });
+  };
+
+  const onNextTrack = () => {
+    addTrack({
+      spotify_uri: "spotify:track:5m2tbM2w8mG76uwFgla2iF",
+      device_id,
+      playerInstance: player,
+    }).then(() => {
+      nextTrack({ device_id, playerInstance: player });
+    });
+  };
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -58,124 +100,75 @@ const WebPlayback: WebPlayback = ({ token }) => {
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
       });
-
       player.addListener("player_state_changed", (state) => {
         if (!state) {
           return;
         }
-        console.log("state", state);
+        console.log("state changed", state);
 
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
-
-        player.getCurrentState().then((state) => {
-          !state ? setActive(false) : setActive(true);
-        });
+        setPosition(state.position);
       });
 
       player.connect();
     };
   }, [token]);
 
-  const play = ({
-    spotify_uri,
-    playerInstance: {
-      _options: { getOAuthToken },
-    },
-  }) => {
-    getOAuthToken((access_token: string) => {
-      fetch(
-        `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`,
-        {
-          method: "PUT",
-          body: JSON.stringify({ uris: [spotify_uri] }),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-    });
-  };
-  const pause = ({
-    playerInstance: {
-      _options: { getOAuthToken },
-    },
-  }) => {
-    getOAuthToken((access_token: string) => {
-      fetch(
-        `https://api.spotify.com/v1/me/player/pause?device_id=${device_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-    });
-  };
-
   return (
-    <>
-      <div className="container">
-        <div className="main-wrapper">
-          <img
-            src={current_track.album.images[0].url}
-            className="now-playing__cover"
-            alt=""
+    player && (
+      <div
+        css={css`
+          background-color: #ecf0f1;
+          position: relative;
+        `}
+      >
+        <div
+          css={css`
+            background-image: url("./logo.png");
+            background-size: cover;
+            background-position: center;
+            width: 125px;
+            height: 37.5px;
+            position: absolute;
+            left: 22px;
+            top: 28px;
+          `}
+        />
+        <button
+          onClick={() => {
+            localStorage.removeItem("access_token");
+            router.replace("/login");
+          }}
+          css={css`
+            color: #555555;
+            position: absolute;
+            left: 32px;
+            bottom: 40px;
+            font-size: 18px;
+          `}
+        >
+          Logout
+        </button>
+        <div
+          css={css`
+            position: relative;
+            width: 75%;
+            max-width: 1341px;
+            margin: auto;
+          `}
+        >
+          <Playlist onPlay={onPlay} data={data} />
+          <Player
+            onPlay={onPlay}
+            onPause={onPause}
+            is_paused={is_paused}
+            onNextTrack={onNextTrack}
+            current_track={current_track}
           />
-
-          <div className="now-playing__side">
-            <div className="now-playing__name">{current_track.name}</div>
-
-            <div className="now-playing__artist">
-              {current_track.artists[0].name}
-            </div>
-          </div>
         </div>
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            player.previousTrack();
-          }}
-        >
-          &lt;&lt;
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            play({
-              playerInstance: player,
-              spotify_uri: "spotify:track:7xGfFoTpQ2E7fRF5lN10tr",
-            });
-          }}
-        >
-          PLAY
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            pause({
-              playerInstance: player,
-            });
-          }}
-        >
-          PAUSE
-        </button>
-
-        <button
-          className="btn-spotify"
-          onClick={() => {
-            player.nextTrack();
-          }}
-        >
-          &gt;&gt;
-        </button>
       </div>
-    </>
+    )
   );
 };
 

@@ -1,4 +1,5 @@
-from flask import Flask, Response, jsonify, make_response, render_template, request
+import os
+from flask import Flask, Response, request
 import contentBasedRecommenderSystem as cbrs
 from contentBasedRecommenderSystem import ContentBasedRecommenderSystem
 import unsupervisedRecommenderSystem as urs
@@ -13,6 +14,9 @@ load_dotenv(verbose=True)
 aws_access_key=os.getenv("S3_ACCESS_KEY")
 aws_secret_access_key=os.getenv("S3_ACCESS_KEY")
 
+import pandas as pd
+from flask_cors import CORS
+
 s3_client = boto3.client('s3', 
     aws_access_key_id=aws_access_key,
     aws_secret_access_key=aws_secret_access_key,
@@ -20,6 +24,11 @@ s3_client = boto3.client('s3',
 )
 
 app = Flask(__name__)
+CORS(app)
+
+@app.route('/', methods=['GET']) 
+def hello_word() :
+    return 'Hello World!'
 
 @app.route('/model/cbr', methods=['post'])
 def cbr():
