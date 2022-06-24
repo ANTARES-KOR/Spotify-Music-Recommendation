@@ -20,6 +20,7 @@ const Home: NextPage = () => {
     console.log(valid);
     if (!valid) {
       router.push("/login");
+      localStorage.removeItem("access_token");
     }
     setToken(JSON.parse(access_token));
     console.log("useState token", access_token);

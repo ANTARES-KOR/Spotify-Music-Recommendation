@@ -17,7 +17,6 @@ const LoadingPage = () => {
     console.log(code);
     // console.log("get code succeed", code);
     if (code === current_code) {
-      console.log("there is token!!!");
       router.push("/");
       return;
     }
