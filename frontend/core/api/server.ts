@@ -85,11 +85,12 @@ export const requestLogin = async () => {
     .then((response) => {
       window.location.replace(response);
     });
+    console.log(res);
 };
 
 export const getToken = async (code: string) => {
-  const res = await fetch(`http://localhost:8080/api/get-token?code=${code}`);
-  console.log(res);
+  let res = fetch(`http://localhost:8080/api/get-token?code=${code}`);
+  return res.then((res)=>res.json());
 };
 
 export const sendFilter = () => {

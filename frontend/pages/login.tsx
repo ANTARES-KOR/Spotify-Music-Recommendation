@@ -9,19 +9,19 @@ const LoginPage = () => {
     "BQDsTCOQ0MRDpmm3Yo768RL0XHIR7hkc5qLzvJqsVxC4aQwxeBO6yj7OacBj0YbtOScsf5mUsBicMBT0pcMFCShMQlBjs7EOFS474O5B1xg1PfyZ1aUlq2L79ys0wwgZ-e3lGJLdeXXd7Fo2sCmQHohjraDD4alVDTpRi5vfhHDZTM4WYrRRMXEMXyH8yfekkBnIrEiGAo9HPQrnhDc47qg7F9U";
 
   const onClick = () => {
-    localStorage.setItem("access_token", JSON.stringify(tmpToken));
-    router.replace("/");
-    // requestLogin()
-    //   .then((res) => {
-    //     console.log(res);
-    //     localStorage.setItem("access_token", JSON.stringify(tmpToken));
-    //   })
-    //   .then(() => {
-    //     router.push("/");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    // localStorage.setItem("access_token", JSON.stringify(tmpToken));
+    // router.replace("/");
+    requestLogin()
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("access_token", JSON.stringify(res));
+      })
+      .then(() => {
+        router.push("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div css={containerStyle}>

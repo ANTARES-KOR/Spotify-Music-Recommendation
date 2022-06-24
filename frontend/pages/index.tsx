@@ -11,8 +11,9 @@ const Home: NextPage = () => {
 
   const checkToken = async () => {
     const access_token = localStorage.getItem("access_token");
+    console.log(access_token)
 
-    if (!access_token) {
+    if (access_token==="undefined") {
       router.push("/login");
     }
 

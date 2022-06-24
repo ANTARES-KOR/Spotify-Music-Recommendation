@@ -7,11 +7,14 @@ const LoadingPage = () => {
   const router = useRouter();
   useEffect(() => {
     console.log(router);
-    const [code] = router.query.params;
+    const code = router.asPath.split("code=")[1];
+  
     console.log("get code succeed", code);
     getToken(code)
       .then((res) => {
         console.log("get token succeed", res);
+        localStorage.setItem("access_token", JSON.stringify(res.access_token));
+        router.push("/");
       })
       .catch((err) => {
         console.log("get token failed", err);
