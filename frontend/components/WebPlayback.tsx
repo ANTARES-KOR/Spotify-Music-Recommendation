@@ -1,15 +1,9 @@
 import { ReactElement, useEffect, useState } from "react";
 import { css, jsx } from "@emotion/react";
-
-import {
-  play,
-  pause,
-  addTrack,
-  nextTrack,
-  getState,
-} from "../core/api/spotifysdk";
+import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
 import Player from "./Player";
 import Playlist from "./Playlist";
+import { useRouter } from "next/router";
 
 type Props = {
   uris: string[];
@@ -36,18 +30,36 @@ const track: Track = {
   artists: [{ name: "" }],
 };
 
-const WebPlayback: WebPlayback = ({ uris, token }) => {
+const WebPlayback: WebPlayback = ({ data, token }) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
+  const [current_position, setPosition] = useState(0);
   const [device_id, setId] = useState("");
+  const router = useRouter();
 
-  const onPlay = () => {
-    play({ spotify_uri: uris[0], device_id, playerInstance: player });
+  const onPlay = (uri: string | undefined, is_new: boolean) => {
+    console.log("onPlay clicked", uri);
+    console.log("position arg in play method", current_position);
+    if (uri === undefined) {
+      play({
+        spotify_uri: data[0].uri,
+        device_id,
+        position: current_position,
+        playerInstance: player,
+      });
+    }
+    play({
+      spotify_uri: uri,
+      device_id,
+      position: is_new ? 0 : current_position,
+      playerInstance: player,
+    });
   };
 
   const onPause = () => {
+    console.log("onPause clicked", device_id);
     pause({ device_id, playerInstance: player });
   };
   const onNextTrack = () => {
@@ -85,14 +97,11 @@ const WebPlayback: WebPlayback = ({ uris, token }) => {
         if (!state) {
           return;
         }
-        console.log("state", state);
+        console.log("state changed", state);
 
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
-
-        player.getCurrentState().then((state) => {
-          !state ? setActive(false) : setActive(true);
-        });
+        setPosition(state.position);
       });
 
       player.connect();
@@ -103,18 +112,54 @@ const WebPlayback: WebPlayback = ({ uris, token }) => {
     player && (
       <div
         css={css`
+          background-color: #ecf0f1;
           position: relative;
-          width: 70%;
-          margin: auto;
         `}
       >
-        <Playlist />
-        <Player
-          onPlay={onPlay}
-          onPause={onPause}
-          onNextTrack={onNextTrack}
-          current_track={current_track}
+        <div
+          css={css`
+            background-image: url("./logo.png");
+            background-size: cover;
+            background-position: center;
+            width: 125px;
+            height: 37.5px;
+            position: absolute;
+            left: 22px;
+            top: 28px;
+          `}
         />
+        <button
+          onClick={() => {
+            localStorage.removeItem("access_token");
+            router.replace("/login");
+          }}
+          css={css`
+            color: #555555;
+            position: absolute;
+            left: 32px;
+            bottom: 40px;
+            font-size: 18px;
+          `}
+        >
+          Logout
+        </button>
+        <div
+          css={css`
+            position: relative;
+            width: 75%;
+            max-width: 1341px;
+            margin: auto;
+          `}
+        >
+          <Playlist onPlay={onPlay} data={data} />
+          <Player
+            onPlay={onPlay}
+            onPause={onPause}
+            is_paused={is_paused}
+            onNextTrack={onNextTrack}
+            current_track={current_track}
+          />
+        </div>
       </div>
     )
   );
