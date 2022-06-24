@@ -13,9 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 load_dotenv(verbose=True)
 
-aws_access_key=os.getenv("AWS_ACCESS_KEY")
-aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-
+aws_access_key=os.getenv("S3_ACCESS_KEY")
+aws_secret_access_key=os.getenv("S3_SECRET_KEY")
 
 
 s3_client = boto3.client('s3', 
@@ -67,14 +66,15 @@ class UnsupervisedRecommenderSystem:
         self.data = data
         self.playlist = playlist
         self.data_scaled = pd.DataFrame()
-        self.playlist_scaled = pd.DataFrame()
+        self.playlist_scaled = pd.DataFrame() 
     
     def scale_dataset(self):
         temp_data = self.data[['danceability', 'energy', 'acousticness', 'valence', 'tempo']].values
         temp_playlist = self.playlist[['danceability', 'energy','acousticness', 'valence', 'tempo']].values 
-        min_max_scaler = MinMaxScaler()
-        temp_data_scaled = min_max_scaler.fit_transform(temp_data)
-        temp_playlist_scaled = min_max_scaler.fit_transform(temp_playlist)
+        min_max_scaler1 = MinMaxScaler()
+        min_max_scaler2 = MinMaxScaler()
+        temp_data_scaled = min_max_scaler1.fit_transform(temp_data)
+        temp_playlist_scaled = min_max_scaler2.fit_transform(temp_playlist)
         columns_scaled = ['danceability_scaled', 'energy_scaled', 'acousticness_scaled','valence_scaled', 'tempo_scaled']
         self.data_scaled = pd.DataFrame(temp_data_scaled, columns=columns_scaled)
         self.playlist_scaled = pd.DataFrame(temp_playlist_scaled, columns=columns_scaled)
@@ -83,10 +83,10 @@ class UnsupervisedRecommenderSystem:
         model = KMeans(n_clusters = k, max_iter = 300, init = 'k-means++', random_state = 42).fit(self.data_scaled.values)
         data_pred = model.predict(self.data_scaled.values)
         self.data_scaled['cluster'] = data_pred
-        self.data_scaled = pd.concat([self.data[['artist_name','track_name']], self.data_scaled], axis=1)
+        self.data_scaled = pd.concat([self.data[['track_name', 'artist_name', 'uri', 'album_image', 'duration_ms']], self.data_scaled], axis=1)
         playlist_pred = model.predict(self.playlist_scaled.values)
         self.playlist_scaled['cluster'] = playlist_pred
-        self.playlist_scaled = pd.concat([self.playlist[['artist_name','track_name']], self.playlist_scaled], axis=1)
+        self.playlist_scaled = pd.concat([self.playlist[['track_name', 'artist_name', 'uri', 'album_image', 'duration_ms']], self.playlist_scaled], axis=1)
 
     def recommend_song(self, song_num = 20):
         cluster_pct = self.playlist_scaled['cluster'].value_counts(normalize=True)*song_num
@@ -99,12 +99,12 @@ class UnsupervisedRecommenderSystem:
             if len(playlist) > song_num:
                 flag = song_num - len(playlist)
                 playlist = playlist[:flag]
-        return playlist[['artist_name', 'track_name', 'album_image']]
+        return playlist[['track_name', 'artist_name', 'uri', 'album_image', 'duration_ms']]
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
 
-    urs = UnsupervisedRecommenderSystem(data, playlist)
-    urs.scale_dataset()
-    urs.cluster_song()
-    urs.recommend_song()
+#    urs = UnsupervisedRecommenderSystem(data, playlist)
+#    urs.scale_dataset()
+#    urs.cluster_song()
+#    urs.recommend_song()
