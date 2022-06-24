@@ -41,7 +41,12 @@ const Player = ({ onPlay, onPause, is_paused, onNextTrack, current_track }) => {
             </div>
           </button>
         )}
-        <button onClick={onNextTrack} className="btn-change">
+        <button
+          onClick={() => {
+            onNextTrack();
+          }}
+          className="btn-change"
+        >
           <img src="/next2.svg" />
         </button>
       </div>

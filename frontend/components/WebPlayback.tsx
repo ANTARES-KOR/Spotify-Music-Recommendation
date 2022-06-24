@@ -62,8 +62,15 @@ const WebPlayback: WebPlayback = ({ data, token }) => {
     console.log("onPause clicked", device_id);
     pause({ device_id, playerInstance: player });
   };
+
   const onNextTrack = () => {
-    nextTrack({ device_id, playerInstance: player });
+    addTrack({
+      spotify_uri: "spotify:track:5m2tbM2w8mG76uwFgla2iF",
+      device_id,
+      playerInstance: player,
+    }).then(() => {
+      nextTrack({ device_id, playerInstance: player });
+    });
   };
 
   useEffect(() => {
