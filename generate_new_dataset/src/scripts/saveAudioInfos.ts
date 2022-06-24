@@ -30,6 +30,7 @@ const parseAudioData = (dataset: any[]) => {
     duration_ms: item.duration_ms,
     time_signature: item.time_signature,
     uri: item.uri ?? "",
+    album_image: item.album_image,
   }));
 };
 

@@ -1,10 +1,9 @@
 version: "3"
 services:
   newsong_crawler:
+    platform: linux/x86_64
     build: .
     env_file:
       - .env
-    environment:
-      - NODE_ENV=development
     volumes:
       - ./data:/app/data

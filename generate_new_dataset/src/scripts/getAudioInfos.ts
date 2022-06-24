@@ -26,6 +26,7 @@ const getAudioInfos = async (tracks: Track[], artistMap: Map<string, Artist>) =>
         artist_name: tracks[index].artists[0].name,
         track_name: tracks[index].name,
         album_name: tracks[index].album.name,
+        album_image: tracks[index].album.images[0].url,
         artist_genre: artistMap.get(tracks[index].artists[0].id)?.genres ?? [],
         artist_popularity: artistMap.get(tracks[index].artists[0].id)?.popularity,
         track_popularity: tracks[index].popularity,
@@ -34,8 +35,6 @@ const getAudioInfos = async (tracks: Track[], artistMap: Map<string, Artist>) =>
         ...feature,
       };
     });
-
-  // saveDataAsJSON(audioInfos, { name: "audio_features.json", type: "tracks" });
 
   return audioInfos;
 };
