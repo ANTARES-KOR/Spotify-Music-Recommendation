@@ -48,6 +48,7 @@ export const nextTrack = ({
     _options: { getOAuthToken },
   },
 }: Props) => {
+  console.log("go to next track");
   getOAuthToken((access_token: string) => {
     fetch(`https://api.spotify.com/v1/me/player/next?device_id=${device_id}`, {
       method: "POST",
@@ -59,17 +60,17 @@ export const nextTrack = ({
   });
 };
 
-export const addTrack = ({
+export const addTrack = async ({
   spotify_uri,
   device_id,
   playerInstance: {
     _options: { getOAuthToken },
   },
 }: Props) => {
+  console.log("add track to the queue");
   getOAuthToken((access_token: string) => {
-    fetch(`https://api.spotify.com/v1/me/player/queue?device_id=${device_id}`, {
+    fetch(`https://api.spotify.com/v1/me/player/queue?uri=${spotify_uri}`, {
       method: "POST",
-      body: JSON.stringify({ uris: [spotify_uri] }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${access_token}`,

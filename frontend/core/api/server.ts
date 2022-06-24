@@ -80,8 +80,16 @@ export const isTokenValid = async (access_token: string) => {
 
 export const requestLogin = async () => {
   // request login to server
-  const res = await fetch("http://localhost:8080/api/login");
-  console.log("test request login api", res);
+  const res = await fetch("http://localhost:8080/api/login")
+    .then((response) => response.text())
+    .then((response) => {
+      window.location.replace(response);
+    });
+};
+
+export const getToken = async (code: string) => {
+  const res = await fetch(`http://localhost:8080/api/get-token?code=${code}`);
+  console.log(res);
 };
 
 export const sendFilter = () => {
