@@ -1,14 +1,13 @@
+import os
 import re
 import numpy as np
 import pandas as pd
 import argparse
-import mlflow
-import mlflow.pyfunc
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-class ContentBasedRecommenderSystem(mlflow.pyfunc.PythonModel):
+class ContentBasedRecommenderSystem:
     
     def __init__(self, data, tfidf, music, mood, speed, emotion):
         self.data = data
@@ -161,26 +160,10 @@ if __name__ == "__main__":
         '--emotion', type=int, default=1
     )
     args = argument_parser.parse_args()
-    reg_model_name = "ContentBasedRecommenderSystem"
-    mlflow.set_tracking_uri("sqlite:///mlruns.db")
-
     track = pd.read_csv(args.data_path, encoding = 'utf-8')
     ct_tfidf = pd.read_csv('./data/tfidf/tfidf_matrix.csv', encoding = 'utf-8')
     
-    # Save Model
-    with mlflow.start_run(run_name="Save PyFunc") as run:
-        cbr = ContentBasedRecommenderSystem(track, ct_tfidf, args.music, args.mood, args.speed, args.emotion)
-        cbr.preprocess()
-        cbr.get_feature_genre_intersection()
-        model_path = f"cbr_model-{run.info.run_uuid}"
-        mlflow.pyfunc.save_model(path=model_path, python_model=cbr)
-
-    loaded_model = mlflow.pyfunc.load_model(model_path)
-
-    # log and register the model using MLflow API
-    with mlflow.start_run():
-        mlflow.pyfunc.log_model(artifact_path=model_path, python_model=cbr, registered_model_name=reg_model_name)
-
-    # load back from the model registry and do the inference
-    model_uri = "models:/{}/1".format(reg_model_name)
-    loaded_model = mlflow.pyfunc.load_model(model_uri)
+    cbr = ContentBasedRecommenderSystem(track, ct_tfidf, args.music, args.mood, args.speed, args.emotion)
+    cbr.preprocess()
+    cbr.get_feature_genre_intersection()
+    cbr.get_total_score()

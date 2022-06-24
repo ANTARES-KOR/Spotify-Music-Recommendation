@@ -2,6 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 import re
 import pandas as pd
+import argparse
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -38,7 +39,7 @@ class ContentTFIDF:
 
         return tfidf_dict, tfidf_content
 
-    def saveTFIDF(self, path = "./data/tfidf"):
+    def saveTFIDF(self, path = "./data/tfidf/"):
         tfidf_dict, tfidf_content = self.calculateTFIDF()
         tfidf_array = tfidf_content.toarray()
         tfidf_matrix = pd.DataFrame(tfidf_array, columns = tfidf_dict)
@@ -50,7 +51,17 @@ class ContentTFIDF:
         tfidf_matrix.to_csv(tfidf_path, encoding = 'utf-8', index = False)
 
 if __name__ == "__main__":
-    data = pd.read_csv('.data/track/track_data.csv', encoding = 'utf-8')
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument(
+        '--data_path', type=str, default="./data/track/track_data.csv"
+    )
+    argument_parser.add_argument(
+        '--path', type=str, default="./data/tfidf/"
+    )
+    args = argument_parser.parse_args()
+    data = pd.read_csv(args.data_path, encoding = 'utf-8')
+    
     ctfidf = ContentTFIDF(data)
     ctfidf.preprocess()
-    ctfidf.saveTFIDF()
+    ctfidf.saveTFIDF(args.path)
+ 
