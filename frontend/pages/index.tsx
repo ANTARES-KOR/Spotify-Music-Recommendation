@@ -12,11 +12,12 @@ const Home: NextPage = () => {
   const checkToken = async () => {
     const access_token = localStorage.getItem("access_token");
     console.log("check token", access_token);
-    if (access_token === "undefined") {
+    if (!access_token || access_token === "undefined") {
       router.push("/login");
     }
 
     const valid = await isTokenValid(access_token);
+    console.log(valid);
     if (!valid) {
       router.push("/login");
     }

@@ -65,7 +65,7 @@ export const fetchSongs = async (access_token: string) => {
 
 export const isTokenValid = async (access_token: string) => {
   // check the validity of exist access token
-  const res = await fetch("url", {
+  const res = await fetch("http://localhost:8080/token/validate", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export const isTokenValid = async (access_token: string) => {
   if (res.status === 200) {
     return true;
   }
-  return true; // return false
+  return false; // return false
 };
 
 export const requestLogin = async () => {
