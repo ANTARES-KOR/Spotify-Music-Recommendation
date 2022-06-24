@@ -18,15 +18,20 @@ export const fetchSongs = async (access_token: string) => {
 
 export const isTokenValid = async (access_token: string) => {
   // check the validity of exist access token
-  const res = await fetch("http://localhost:8080/token/validate", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-  });
-  if (res.status === 200) {
-    return true;
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/token/validate`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    if (res.status === 200) {
+      return true;
+    }
+  } catch (e) {
+    console.error(e);
   }
   return true; // return false
 };
@@ -34,7 +39,7 @@ export const isTokenValid = async (access_token: string) => {
 export const requestLogin = async () => {
   // request login to server
   localStorage.removeItem("access_token");
-  const res = await fetch("http://localhost:8080/api/login")
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/api/login`)
     .then((response) => response.text())
     .then((response) => {
       window.location.replace(response);
@@ -43,11 +48,11 @@ export const requestLogin = async () => {
 
 export const getToken = async (code: string) => {
   console.log("get token occured");
-  let res = fetch(`http://localhost:8080/api/get-token?code=${code}`);
+  let res = fetch(`${process.env.NEXT_PUBLIC_API_URI}/api/get-token?code=${code}`);
   return res.then((res) => res.json());
 };
 
-export const sendFilter = async (data, access_token: string) => {
+export const sendFilter = async (data: any, access_token: string) => {
   // send filter data of user
   const res = await fetch("url", {
     method: "POST",
@@ -60,6 +65,6 @@ export const sendFilter = async (data, access_token: string) => {
 };
 
 export const fetchSample = async () => {
-  let res = fetch("http://localhost:8080/api/getFilterInitTrack");
+  let res = fetch(`${process.env.NEXT_PUBLIC_API_URI}/api/getFilterInitTrack`);
   return res.then((res) => res.json()).then((result) => result);
 };
