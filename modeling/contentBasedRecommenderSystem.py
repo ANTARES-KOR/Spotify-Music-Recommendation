@@ -13,8 +13,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv(verbose=True)
 
-aws_access_key=os.getenv("AWS_ACCESS_KEY")
-aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+aws_access_key=os.getenv("S3_ACCESS_KEY")
+aws_secret_access_key=os.getenv("S3_SECRET_KEY")
 
 
 
@@ -73,7 +73,8 @@ class ContentBasedRecommenderSystem:
         self.result = pd.DataFrame()
 
     def cleanText(self, text_data):
-        text = re.sub('[-=+#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]','', text_data)
+        text_data_str = str(text_data)
+        text = re.sub('[-=+#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]','', text_data_str)
         return text
 
     def preprocess(self):
@@ -184,14 +185,14 @@ class ContentBasedRecommenderSystem:
         return temp['emotion_score']
 
     def get_total_score(self, top_n = 20):
-        result_df = self.result[['artist_name', 'track_name', 'album_name']]
+        result_df = self.result[['track_name', 'artist_name', 'uri', 'album_image', 'duration_ms']]
         result_df['mood_score'] = pd.DataFrame(self.get_mood_score())
         result_df['speed_score'] = pd.DataFrame(self.get_speed_score())
         result_df['emotion_score'] = pd.DataFrame(self.get_emotion_score())
         result_df['genre_score'] = pd.DataFrame(self.get_genre_score())
         result_df['total_score'] = result_df.apply(lambda x: 1/6*(x['mood_score'] + x['speed_score'] + x['emotion_score']) + 0.5*x['genre_score'], axis = 1)
-        
-        return result_df.iloc[1:].sort_values(by = 'total_score', ascending=False)[:top_n]
+        result_df = result_df.iloc[1:].sort_values(by = 'total_score', ascending=False)[:top_n]
+        return result_df[['track_name', 'artist_name', 'uri', 'album_image', 'duration_ms']] 
 
 def download_file(file_name, bucket, object_name=None):
     
@@ -235,7 +236,6 @@ if __name__ == "__main__":
         '--emotion', type=int, default=1
     )
     args = argument_parser.parse_args()
-    track = pd.read_csv(args.data_path, encoding = 'utf-8')
 
     download_file_from_s3(args.data_path, "spotify-recomendation-dataset", "dataset.json")
     track = pd.read_json(args.data_path, encoding = 'utf-8', orient='records')
