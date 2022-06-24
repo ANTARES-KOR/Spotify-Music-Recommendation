@@ -1,5 +1,6 @@
 import { writeFileSync } from "fs";
 import format from "date-fns/format";
+import { sub } from "date-fns";
 
 type SaveDataAsJSON = (data: any, { name, type }: { name: string; type: string }) => void;
 
@@ -19,8 +20,8 @@ export const getNewReleasesFilePath = ({ offset, today }: { offset: number; toda
 export const getTargetReleaseDate = () => {
   process.env.TZ = "Asia/Seoul";
 
-  // const release_date = format(sub(new Date(), { days: 1 }), "yyyy-MM-dd");
-  const release_date = format(new Date("2022-06-01"), "yyyy-MM-dd");
+  // const release_date = format(sub(new Date(), { days: 2 }), "yyyy-MM-dd");
+  const release_date = format(new Date("2022-06-22"), "yyyy-MM-dd");
 
   return release_date;
 };

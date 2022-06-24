@@ -1,7 +1,6 @@
 version: "3"
 services:
-  newsong_crawler:
-    platform: linux/x86_64
+  dataset_crawler:
     build: .
     env_file:
       - .env
