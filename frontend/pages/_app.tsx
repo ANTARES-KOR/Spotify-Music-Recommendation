@@ -5,16 +5,19 @@ import { Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { global } from "../styles/global";
+import { TokenProvider } from "../context/TokenContex";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
   return (
-    <QueryClientProvider client={queryClient}>
-      <Global styles={global} />
-      <Script src="https://sdk.scdn.co/spotify-player.js" />
-      <Component {...pageProps} />
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+    <TokenProvider>
+      <QueryClientProvider client={queryClient}>
+        <Global styles={global} />
+        <Script src="https://sdk.scdn.co/spotify-player.js" />
+        <Component {...pageProps} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </TokenProvider>
   );
 }
 

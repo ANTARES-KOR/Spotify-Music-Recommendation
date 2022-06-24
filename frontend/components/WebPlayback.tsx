@@ -4,6 +4,7 @@ import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
 import Player from "./Player";
 import Playlist from "./Playlist";
 import { useRouter } from "next/router";
+import { useToken } from "../context/TokenContex";
 
 type Props = {
   uris: string[];
@@ -30,7 +31,7 @@ const track: Track = {
   artists: [{ name: "" }],
 };
 
-const WebPlayback: WebPlayback = ({ data, token }) => {
+const WebPlayback: WebPlayback = ({ data }) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
@@ -38,6 +39,7 @@ const WebPlayback: WebPlayback = ({ data, token }) => {
   const [current_track, setTrack] = useState(track);
   const [current_position, setPosition] = useState(0);
   const [device_id, setId] = useState("");
+  const token = useToken();
   const router = useRouter();
 
   console.log("player", player);
@@ -88,7 +90,7 @@ const WebPlayback: WebPlayback = ({ data, token }) => {
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          cb(JSON.parse(localStorage.getItem("access_token")));
+          cb(token);
           console.log("log2", localStorage.getItem("access_token"));
         },
         volume: 0.5,
