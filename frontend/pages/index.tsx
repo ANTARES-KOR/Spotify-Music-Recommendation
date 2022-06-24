@@ -9,41 +9,38 @@ const Home: NextPage = () => {
   const router = useRouter();
   const [token, setToken] = useState();
 
-  useEffect(() => {
-    console.log("main page useeffect");
+  const checkToken = async () => {
     const access_token = localStorage.getItem("access_token");
+
     if (!access_token) {
-      // if there is no access_token in localstorage, redirect to login page
       router.push("/login");
     }
 
-    const validity = isTokenValid(access_token); // check the validity of access_token
-    if (!validity) {
+    const valid = await isTokenValid(access_token);
+    if (!valid) {
       router.push("/login");
     }
     setToken(JSON.parse(access_token));
+    console.log("useState token", access_token);
+  };
+
+  const tokenQuery = useQuery("token", checkToken, { staleTime: 300000 });
+  const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
+    staleTime: 600000,
+  });
+
+  useEffect(() => {
+    checkToken();
   }, []);
 
-  // fetch the recommended songs
-  // const { status, data, error } = useQuery(["songs", token], () =>
-  //   fetchSongs(token)
-  // );
-  const uris = [
-    // temp data
-    "spotify:track:7cDpMO5wuWgvv3j4INRBeB",
-    "spotify:track:4ZaRg5Sf4TKr0YcFRLh7QJ",
-    "spotify:track:7eCpXVlWnTVEE8twb3P8m5",
-  ];
+  if (songsQuery.status === "loading" || tokenQuery.status === "loading") {
+    return <span>Loading...</span>;
+  }
 
-  // if (status === "loading") {
-  //   return <span>Loading...</span>;
-  // }
-
-  // if (status === "error") {
-  //   return <span>Error: {error.message}</span>;
-  // }
-
-  return <WebPlayback uris={uris} token={token} />;
+  if (songsQuery.status === "error" || tokenQuery.status === "error") {
+    return <span>Error: {error.message}</span>;
+  }
+  return <WebPlayback data={songsQuery.data} token={token} />;
 };
 
 export default Home;

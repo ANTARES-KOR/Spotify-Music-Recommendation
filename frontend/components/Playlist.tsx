@@ -1,30 +1,16 @@
 import SingleSong from "./SingleSong";
 import { css, jsx } from "@emotion/react";
 
-const Playlist = ({}) => {
-  const songs = [
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-    { title: "The Bones", artist: "Maren Morris", img: "/pause2.svg" },
-  ];
+const Playlist = ({ onPlay, data }) => {
+  console.log("playlist", data);
   return (
     <div css={containerStyle}>
-      <div css={headerImage} />
+      <div css={headerImage}>
+        <h1>My Music</h1>
+      </div>
       <div css={songsContainerStyle}>
-        {songs.map((info, i) => (
-          <SingleSong
-            key={i}
-            title={info.title}
-            artist={info.artist}
-            img={info.img}
-          />
+        {data.map((info, i) => (
+          <SingleSong onPlay={onPlay} key={i} info={info} />
         ))}
       </div>
     </div>
@@ -43,6 +29,14 @@ const headerImage = css`
   display: flex;
   height: 410px;
   background-image: url("/header.png");
+  position: relative;
+  h1 {
+    color: #ffffff;
+    position: absolute;
+    bottom: 0;
+    left: 200px;
+    font-size: 80px;
+  }
 `;
 
 const songsContainerStyle = css`
@@ -50,6 +44,5 @@ const songsContainerStyle = css`
   flex-direction: column;
   flex: 1;
   padding-bottom: 110px;
-
   overflow: scroll;
 `;

@@ -11,21 +11,37 @@ type SingleSong = {
   (props: Props): ReactElement;
 };
 
-const SingleSong: SingleSong = ({ title, artist, img }) => {
+const SingleSong: SingleSong = ({ info, onPlay }) => {
+  const { title, artistName, albumImg, uri, contentLength } = info;
+  const onClick = () => {
+    onPlay(uri, true);
+  };
+  const convertTime = (ms: number) => {
+    const min = Math.floor(ms / 1000 / 60);
+    const sec = Math.floor((ms / 1000) % 60);
+
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  };
   return (
     <div css={containerStyle}>
       <div css={imgBlockStyle}>
-        <img src={img} />
+        <img src={albumImg} />
       </div>
 
       <div css={blockStyle}>
         <h3 css={titleStyle}>{title}</h3>
-        <p css={artistStyle}>{artist}</p>
+        <p css={artistStyle}>{artistName}</p>
       </div>
-
-      <button css={btnStyle}>
-        <img src="/play3.svg" />
-      </button>
+      <div css={sideBlockStyle} className="side-block">
+        <p>{convertTime(contentLength)}</p>
+        <button
+          onClick={() => {
+            onClick();
+          }}
+        >
+          <img src="/play3.svg" />
+        </button>
+      </div>
     </div>
   );
 };
@@ -39,16 +55,20 @@ const containerStyle = css`
   position: relative;
   display: flex;
   flex-shrink: 0;
+  background-color: #ffffff;
+
   div {
     display: flex;
-    flex-direction: column;
     justify-content: center;
   }
 `;
 
-const blockStyle = css``;
+const blockStyle = css`
+  flex-direction: column;
+`;
 
 const imgBlockStyle = css`
+  flex-direction: column;
   width: 72px;
   margin-right: 48px;
   img {
@@ -69,15 +89,19 @@ const artistStyle = css`
   margin: 0;
 `;
 
-const btnStyle = css`
-  border: none;
-  background: transparent;
+const sideBlockStyle = css`
   position: absolute;
+  display: flex;
+  flex-direction: row;
   right: 55px;
   top: 50%;
   transform: translateY(-50%);
   img {
     width: 24px;
     height: 20px;
+  }
+  p {
+    color: #e74c3c;
+    font-weight: 300;
   }
 `;
