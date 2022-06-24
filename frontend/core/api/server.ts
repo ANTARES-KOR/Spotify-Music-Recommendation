@@ -80,19 +80,33 @@ export const isTokenValid = async (access_token: string) => {
 
 export const requestLogin = async () => {
   // request login to server
+  localStorage.removeItem("access_token");
   const res = await fetch("http://localhost:8080/api/login")
     .then((response) => response.text())
     .then((response) => {
       window.location.replace(response);
     });
-    console.log(res);
 };
 
 export const getToken = async (code: string) => {
+  console.log("get token occured");
   let res = fetch(`http://localhost:8080/api/get-token?code=${code}`);
-  return res.then((res)=>res.json());
+  return res.then((res) => res.json());
 };
 
-export const sendFilter = () => {
+export const sendFilter = async (data, access_token: string) => {
   // send filter data of user
+  const res = await fetch("url", {
+    method: "POST",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+};
+
+export const fetchSample = async () => {
+  let res = fetch("http://localhost:8080/api/getFilterInitTrack");
+  return res.then((res) => res.json()).then((result) => result);
 };

@@ -1,10 +1,6 @@
 import { css, jsx } from "@emotion/react";
 
 const Player = ({ onPlay, onPause, is_paused, onNextTrack, current_track }) => {
-  console.log("player component rerendered");
-  console.log("paused? ", is_paused);
-  console.log(current_track);
-
   return (
     <div css={containerStyle}>
       <div css={imgContainerStyle}>

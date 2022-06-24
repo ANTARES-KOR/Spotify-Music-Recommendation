@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import WebPlayback from "../components/WebPlayback";
 import { useQuery } from "react-query";
-import { fetchSongs, isTokenValid } from "../core/api/server";
+import { fetchSample, fetchSongs, isTokenValid } from "../core/api/server";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -11,9 +11,8 @@ const Home: NextPage = () => {
 
   const checkToken = async () => {
     const access_token = localStorage.getItem("access_token");
-    console.log(access_token)
-
-    if (access_token==="undefined") {
+    console.log("check token", access_token);
+    if (access_token === "undefined") {
       router.push("/login");
     }
 
@@ -25,12 +24,13 @@ const Home: NextPage = () => {
     console.log("useState token", access_token);
   };
 
-  const tokenQuery = useQuery("token", checkToken, { staleTime: 300000 });
+  const tokenQuery = useQuery("token", checkToken);
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
     staleTime: 600000,
   });
 
   useEffect(() => {
+    console.log("useeffect of mainpage");
     checkToken();
   }, []);
 
@@ -39,9 +39,11 @@ const Home: NextPage = () => {
   }
 
   if (songsQuery.status === "error" || tokenQuery.status === "error") {
-    return <span>Error: {error.message}</span>;
+    return <span>Error</span>;
   }
-  return <WebPlayback data={songsQuery.data} token={token} />;
+  return (
+    <WebPlayback data={songsQuery.data} token={token} setToken={setToken} />
+  );
 };
 
 export default Home;
