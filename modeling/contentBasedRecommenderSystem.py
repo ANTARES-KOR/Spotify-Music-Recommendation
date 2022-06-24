@@ -16,14 +16,11 @@ load_dotenv(verbose=True)
 aws_access_key=os.getenv("S3_ACCESS_KEY")
 aws_secret_access_key=os.getenv("S3_SECRET_KEY")
 
-
-
 s3_client = boto3.client('s3', 
     aws_access_key_id=aws_access_key,
     aws_secret_access_key=aws_secret_access_key,
     region_name='ap-northeast-2'
 )
-
 
 def upload_file_to_s3(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket

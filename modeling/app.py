@@ -1,16 +1,13 @@
-from flask import Flask, Response, jsonify, make_response, render_template, request
+import os
+from flask import Flask, Response, request
 import contentBasedRecommenderSystem as cbrs
 from contentBasedRecommenderSystem import ContentBasedRecommenderSystem
-import os
 import pandas as pd
-import boto3
-from dotenv import load_dotenv
-
-load_dotenv(verbose=True)
-
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/model/cbr', methods=['post'])
 def cbr():
@@ -19,16 +16,6 @@ def cbr():
     speed = request.json['speed']
     emotion = request.json['emotion']
     
-
-    aws_access_key=os.getenv("S3_ACCESS_KEY")
-    aws_secret_access_key=os.getenv("S3_ACCESS_KEY")
-
-    s3_client = boto3.client('s3', 
-        aws_access_key_id=aws_access_key,
-        aws_secret_access_key=aws_secret_access_key,
-        region_name='ap-northeast-2'
-    )
-
     cbrs.download_file_from_s3("./data/track/track_dataset.json", "spotify-recomendation-dataset", "dataset.json")
     track = pd.read_json("./data/track/track_dataset.json", encoding = 'utf-8', orient='records')
     cbrs.download_file_from_s3("./data/tfidf/tfidf_matrix.csv", "spotify-tfidf", "tfidf_matrix.csv")
