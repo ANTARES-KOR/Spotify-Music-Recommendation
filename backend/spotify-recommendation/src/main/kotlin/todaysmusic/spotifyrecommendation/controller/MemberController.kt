@@ -14,9 +14,15 @@ class MemberController(
 
     @GetMapping("/token/validate")
     fun checkTokenValidate(
-        @RequestHeader(value = "Authorization") accessToken: String): Boolean {
-        val isValid: Boolean = memberService.checkTokenValidation(accessToken.replace("Bearer ", ""))
-        return isValid
+        @RequestHeader(value = "Authorization") accessToken: String): ResponseEntity<Void> {
+
+        val isValid: Boolean = memberService.checkTokenValidation(accessToken.replace("Bearer ", "").replace("\"", ""))
+        if (!isValid) {
+            return ResponseEntity<Void>(HttpStatus.BAD_REQUEST)
+        }
+        else {
+            return ResponseEntity<Void>(HttpStatus.OK)
+        }
     }
 
 }

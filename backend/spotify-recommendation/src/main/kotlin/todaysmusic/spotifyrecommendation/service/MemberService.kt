@@ -32,13 +32,13 @@ class MemberService(
 
         val request: HttpEntity<Any> = HttpEntity<Any>(headers)
 
-        var response: ResponseEntity<String> = restTemplate.exchange(
+        val response: ResponseEntity<String> = restTemplate.exchange(
             requestUri,
             HttpMethod.GET,
             request,
             String::class.java
         )
-        var result: Map<String, String>
+        val result: Map<String, String>
 
         val mapper = jacksonObjectMapper()
         result = mapper.readValue(response.body, Map::class.java) as Map<String, String>
