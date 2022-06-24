@@ -1,6 +1,8 @@
 package todaysmusic.spotifyrecommendation.controller;
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
@@ -12,6 +14,7 @@ import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest
+import todaysmusic.spotifyrecommendation.service.MemberService
 import java.net.URI
 import javax.annotation.PostConstruct
 import javax.servlet.http.HttpServletResponse
@@ -19,7 +22,10 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/api")
-class AuthController() {
+class AuthController(
+    private var memberController: MemberController,
+    private var memberService: MemberService
+) {
 
     @Value("\${client.id}")
     private var clientId: String? = null
@@ -27,8 +33,9 @@ class AuthController() {
     @Value("\${client.secret}")
     private var clientSecret: String? = null
 
-//    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-user-code")
-    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/auth/callback/spotify")
+//    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/get-token")
+//    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:8080/api/auth/callback/spotify")
+    private val redirectURI: URI = SpotifyHttpManager.makeUri("http://localhost:3000/loading")
     private var code: String = ""
 
     private var spotifyApi: SpotifyApi? = null
@@ -43,7 +50,7 @@ class AuthController() {
     }
 
     @GetMapping("login")
-    fun spotifyLogin(): RedirectView {
+    fun spotifyLogin(): String {
 
         buildSpotifyApi()
 
@@ -56,29 +63,37 @@ class AuthController() {
         val redirectView: RedirectView = RedirectView()
         redirectView.url = uri.toString()
 
-        return redirectView
+        return uri.toString()
     }
 
-//    @GetMapping("get-user-code")
-    @GetMapping("auth/callback/spotify")
+    @GetMapping("get-token")
+    @ResponseBody
+    @CrossOrigin(origins = arrayOf("*"), allowedHeaders = arrayOf("*"))
+//    @GetMapping("auth/callback/spotify")
     fun getUserCodes(
         @RequestParam("code") userCode: String,
         response: HttpServletResponse
-    ) : HashMap<String, Any> {
+    ) :
+            HashMap<String, String>
+    {
         code = userCode
+        println(code)
         val authorizationRequest: AuthorizationCodeRequest = spotifyApi!!.authorizationCode(code)
             .build()
 
         val authorizationCodeCredentials: AuthorizationCodeCredentials = authorizationRequest.execute()
 
-        val map: HashMap<String, Any> = HashMap()
+        val map: HashMap<String, String> = HashMap()
         map["token_type"] = authorizationCodeCredentials.tokenType
         map["access_token"] = authorizationCodeCredentials.accessToken
         map["refresh_token"] = authorizationCodeCredentials.refreshToken
         map["scope"] = authorizationCodeCredentials.scope
-        map["expires_in"] = authorizationCodeCredentials.expiresIn
+        map["expires_in"] = authorizationCodeCredentials.expiresIn.toString()
         println(authorizationCodeCredentials.accessToken)
-//        response.sendRedirect("http://youtube.com")
+
+        val res:ResponseEntity<String> = memberService.getAndSaveUserInfoByAccessToken(map)
+        println(res)
+
         return map
     }
 

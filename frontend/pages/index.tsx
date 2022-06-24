@@ -21,7 +21,7 @@ const Home: NextPage = () => {
     if (!valid) {
       router.push("/login");
     }
-    setToken(JSON.parse(access_token));
+    // setToken(JSON.parse(access_token));
     console.log("useState token", access_token);
   };
 

@@ -38,6 +38,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 //	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
 	implementation ("se.michaelthelin.spotify:spotify-web-api-java:7.1.0")
+	implementation ("com.google.code.gson:gson")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
