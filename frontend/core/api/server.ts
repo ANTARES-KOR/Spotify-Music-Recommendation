@@ -81,7 +81,7 @@ export const isTokenValid = async (access_token: string) => {
 export const requestLogin = async () => {
   // request login to server
   const res = await fetch("http://localhost:8080/api/login");
-  console.log(res);
+  console.log("test request login api", res);
 };
 
 export const sendFilter = () => {
