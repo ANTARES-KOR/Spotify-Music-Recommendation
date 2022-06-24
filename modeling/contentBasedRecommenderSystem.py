@@ -1,10 +1,64 @@
 import os
 import re
+import logging
+import argparse
 import numpy as np
 import pandas as pd
-import argparse
+import boto3
+import boto3.s3
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
+
+load_dotenv(verbose=True)
+
+aws_access_key=os.getenv("AWS_ACCESS_KEY")
+aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+
+
+
+s3_client = boto3.client('s3', 
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name='ap-northeast-2'
+)
+
+
+def upload_file_to_s3(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
+def download_file_from_s3(file_name, bucket, object_name=None):
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    try:
+        s3_client.download_file(bucket, object_name, file_name)
+
+    except ClientError as e:
+        print(e)
+        logging.error(e)
+        return False
+    return True
 
 
 class ContentBasedRecommenderSystem:
@@ -139,10 +193,31 @@ class ContentBasedRecommenderSystem:
         
         return result_df.iloc[1:].sort_values(by = 'total_score', ascending=False)[:top_n]
 
+def download_file(file_name, bucket, object_name=None):
+    
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_name)
+
+    # Upload the file
+    load_dotenv(verbose = True)
+
+    s3_client = boto3.client('s3', 
+      aws_access_key_id=os.getenv('S3_ACCESS_KEY'),
+      aws_secret_access_key=os.getenv('S3_SECRET_KEY'),
+      region_name='ap-northeast-2'
+    )
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except ClientError as e:
+        logging.error(e)
+        return False
+    return True
+
 if __name__ == "__main__":
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument(
-        '--data_path', type=str, default="./data/track/track_data.csv"
+        '--data_path', type=str, default="./data/track/track_dataset.json"
     )
     argument_parser.add_argument(
         '--tfidf_path', type=str, default="./data/track/track_data.csv"
@@ -161,7 +236,11 @@ if __name__ == "__main__":
     )
     args = argument_parser.parse_args()
     track = pd.read_csv(args.data_path, encoding = 'utf-8')
-    ct_tfidf = pd.read_csv('./data/tfidf/tfidf_matrix.csv', encoding = 'utf-8')
+
+    download_file_from_s3(args.data_path, "spotify-recomendation-dataset", "dataset.json")
+    track = pd.read_json(args.data_path, encoding = 'utf-8', orient='records')
+    download_file_from_s3(args.tfidf_path, "spotify-tfidf", "tfidf_matrix.csv")
+    ct_tfidf = pd.read_csv(args.tfidf_path, encoding = 'utf-8')
     
     cbr = ContentBasedRecommenderSystem(track, ct_tfidf, args.music, args.mood, args.speed, args.emotion)
     cbr.preprocess()
