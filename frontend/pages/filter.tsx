@@ -5,6 +5,53 @@ import NoSSR from "react-no-ssr";
 import { css } from "@emotion/react";
 import TrackSelect from "../components/filter/TrackSelect";
 import ImageSelect from "../components/filter/MoodSelect";
+import EmotionSelect from "../components/filter/EmotionSelect";
+
+const Tracks = [
+  {
+    track_name: "DNA",
+    artist_name: "방탄소년단",
+    album_image: "/a1.jfif",
+  },
+  {
+    track_name: "Shape of You",
+    artist_name: "Ed Sheeran",
+    album_image: "/a2.jfif",
+  },
+  {
+    track_name: "TOMBOY",
+    artist_name: "(여자) 아이들",
+    album_image: "/a3.jfif",
+  },
+  {
+    track_name: "Okay Dokey",
+    artist_name: "MINO, 지코",
+    album_image: "/a4.jfif",
+  },
+  {
+    track_name: "선물",
+    artist_name: "멜로망스",
+    album_image: "/a5.jfif",
+  },
+];
+
+const Emotions = [
+  {
+    description: "I'm depressed",
+    image_url: "/depressed.png",
+    emotion_number: 1,
+  },
+  {
+    description: "I'm feeling normal",
+    image_url: "/normal.png",
+    emotion_number: 2,
+  },
+  {
+    description: "I'm excited!",
+    image_url: "/excited.png",
+    emotion_number: 3,
+  },
+];
 
 const Home: NextPage = () => {
   const [stage, setStage] = useState(-1);
@@ -14,7 +61,10 @@ const Home: NextPage = () => {
   const [music, setMusic] = useState("");
 
   const onBack = () => {
-    setStage(stage - 1);
+    setStage((prev) => {
+      if (prev === -1) return prev;
+      return prev - 1;
+    });
   };
 
   return (
@@ -46,6 +96,22 @@ const Home: NextPage = () => {
               `}
               src="/back.png"
             />
+            <button
+              css={css`
+                width: 60px;
+                height: 48px;
+                color: #3751ff;
+                font-size: 22px;
+                margin: 0 auto;
+                margin-top: 24px;
+                cursor: pointer;
+                position: absolute;
+                right: 48px;
+                top: 36px;
+              `}
+            >
+              Reset
+            </button>
             {stage === -1 && (
               <>
                 <p style={text1}>Which song do you like the most?</p>
@@ -57,66 +123,21 @@ const Home: NextPage = () => {
                     gap: 24px;
                   `}
                 >
-                  <TrackSelect
-                    track_name="DNA"
-                    artist_name="방탄소년단"
-                    album_image="/a1.jfif"
-                    selected={music === "DNA"}
-                    onClick={() => {
-                      setMusic("DNA");
-                      setTimeout(() => {
-                        setStage(stage + 1);
-                      }, 500);
-                    }}
-                  />
-                  <TrackSelect
-                    track_name="Shape of You"
-                    artist_name="Ed Sheeran"
-                    album_image="/a2.jfif"
-                    selected={music === "Shape of You"}
-                    onClick={() => {
-                      setMusic("Shape of You");
-                      setTimeout(() => {
-                        setStage(stage + 1);
-                      }, 500);
-                    }}
-                  />
-                  <TrackSelect
-                    track_name="TOMBOY"
-                    artist_name="(여자)아이들"
-                    album_image="/a3.jfif"
-                    selected={music === "TOMBOY"}
-                    onClick={() => {
-                      setMusic("TOMBOY");
-                      setTimeout(() => {
-                        setStage(stage + 1);
-                      }, 500);
-                    }}
-                  />
-                  <TrackSelect
-                    track_name="Okay Dokey"
-                    artist_name="MINO, 지코"
-                    album_image="/a4.jfif"
-                    selected={music === "Okay Dokey"}
-                    onClick={() => {
-                      setMusic("Okay Dokey");
-                      setTimeout(() => {
-                        setStage(stage + 1);
-                      }, 500);
-                    }}
-                  />
-                  <TrackSelect
-                    track_name="선물"
-                    artist_name="멜로망스"
-                    album_image="/a5.jfif"
-                    selected={music === "선물"}
-                    onClick={() => {
-                      setMusic("선물");
-                      setTimeout(() => {
-                        setStage(stage + 1);
-                      }, 500);
-                    }}
-                  />
+                  {Tracks.map((track) => (
+                    <TrackSelect
+                      key={track.track_name}
+                      track_name={track.track_name}
+                      artist_name={track.artist_name}
+                      selected={music === track.track_name}
+                      album_image={track.album_image}
+                      onClick={() => {
+                        setMusic(track.track_name);
+                        setTimeout(() => {
+                          setStage((prev) => prev + 1);
+                        }, 500);
+                      }}
+                    />
+                  ))}
                 </div>
               </>
             )}
@@ -189,43 +210,24 @@ const Home: NextPage = () => {
             {stage === 2 && (
               <>
                 <p style={text3}>What is your current emotional state?</p>
-                <div style={emotionBox}>
-                  <div style={container}>
-                    <HeartBeat1
-                      selected={emotion === 1}
+                <div
+                  css={css`
+                    display: flex;
+                    gap: 32px;
+                    justify-content: center;
+                  `}
+                >
+                  {Emotions.map((item) => (
+                    <EmotionSelect
+                      key={item.emotion_number}
+                      selected={emotion === item.emotion_number}
                       onClick={() => {
-                        setEmotion(1);
-                        setTimeout(() => {
-                          setStage(stage + 1);
-                        }, 500);
+                        setEmotion(item.emotion_number);
                       }}
+                      description={item.description}
+                      image_url={item.image_url}
                     />
-                    <p style={emotionText}>I`m depressed</p>
-                  </div>
-                  <div style={container}>
-                    <HeartBeat2
-                      selected={emotion === 2}
-                      onClick={() => {
-                        setEmotion(2);
-                        setTimeout(() => {
-                          setStage(stage + 1);
-                        }, 500);
-                      }}
-                    />
-                    <p style={emotionText}>Just Normal</p>
-                  </div>
-                  <div style={container}>
-                    <HeartBeat3
-                      selected={emotion === 3}
-                      onClick={() => {
-                        setEmotion(3);
-                        setTimeout(() => {
-                          setStage(stage + 1);
-                        }, 500);
-                      }}
-                    />
-                    <p style={emotionText}>I`m excited!</p>
-                  </div>
+                  ))}
                 </div>
               </>
             )}
@@ -238,54 +240,6 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const heart = {
-  width: "40%",
-  height: "40%",
-};
-const hover = {
-  backgroundColor: "rgba(0,0,0,0.2)",
-  width: "16.3%",
-  height: "35.5%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "absolute",
-};
-const hover1 = {
-  backgroundColor: "rgba(0,0,0,0.2)",
-  width: "42.7%",
-  height: "50.5%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "absolute",
-};
-const hover2 = {
-  backgroundColor: "rgba(0,0,0,0.2)",
-  width: "42.7%",
-  height: "48.5%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "absolute",
-};
-const hover3 = {
-  backgroundColor: "rgba(0,0,0,0.2)",
-  width: "13.6%",
-  height: "25.7%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "absolute",
-};
-const back = {
-  width: "32px",
-  marginLeft: "32px",
-  marginTop: "32px",
-  border: "1px solid #F2F2F2",
-  opacity: "1",
-  cursor: "pointer",
-};
 const text1 = {
   marginTop: "5%",
   marginLeft: "20%",
@@ -310,68 +264,6 @@ const text2 = {
   color: "#121212",
   opacity: "1",
 };
-const moodBox = {
-  width: "97%",
-  height: "20%",
-  display: "flex",
-  justifyContent: "center",
-  marginLeft: "2%",
-};
-const mood1 = {
-  width: "44%",
-  height: "100%",
-  opacity: "1",
-  margin: "3%",
-  cursor: "pointer",
-};
-const mood2 = {
-  width: "44%",
-  height: "100%",
-  opacity: "1",
-  margin: "3%",
-  cursor: "pointer",
-};
-const mood3 = {
-  cursor: "pointer",
-};
-const mood4 = {
-  width: "70%",
-  height: "70%",
-  cursor: "pointer",
-};
-const emotionBox = {
-  width: "70%",
-  height: "20%",
-  display: "flex",
-  justifyContent: "center",
-  margin: "0 auto",
-  paddingLeft: "10%",
-};
-
-const emotionText = {
-  marginTop: "5%",
-  marginLeft: "3%",
-  width: "100%",
-  height: "21%",
-
-  textAlign: "center",
-  font: "normal normal bold 100%/150% Helvetica Neue",
-  letterSpacing: "0%",
-  color: "#121212",
-  opacity: "1",
-};
-const container = {
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  textAlign: "center",
-  marginRight: "10%",
-};
-const mood_common = {
-  width: "100%",
-  height: "100%",
-};
 
 const text3 = {
   marginTop: "5%",
@@ -393,42 +285,4 @@ const bodyss = {
   marginBottom: "0%",
   background: "#EFF2F8 0% 0% no-repeat padding-box",
   opacity: "1",
-};
-
-const HeartBeat1 = ({ selected, onClick }: { selected: boolean; onClick: () => void }) => {
-  return (
-    <div onClick={onClick} style={mood3}>
-      {selected && (
-        <div style={hover}>
-          <img style={heart} src="/heart.png" />
-        </div>
-      )}
-      <img style={mood_common} src="/depressed.png" />
-    </div>
-  );
-};
-
-const HeartBeat2 = ({ selected, onClick }: { selected: boolean; onClick: () => void }) => {
-  return (
-    <div onClick={onClick} style={mood3}>
-      {selected && (
-        <div style={hover}>
-          <img style={heart} src="/heart.png" />
-        </div>
-      )}
-      <img style={mood_common} src="/normal.png" />
-    </div>
-  );
-};
-const HeartBeat3 = ({ selected, onClick }: { selected: boolean; onClick: () => void }) => {
-  return (
-    <div onClick={onClick} style={mood3}>
-      {selected && (
-        <div style={hover}>
-          <img style={heart} src="/heart.png" />
-        </div>
-      )}
-      <img style={mood_common} src="/excited.png" />
-    </div>
-  );
 };
