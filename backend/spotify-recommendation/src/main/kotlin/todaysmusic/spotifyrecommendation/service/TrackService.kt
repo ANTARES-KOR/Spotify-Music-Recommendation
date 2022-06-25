@@ -56,6 +56,7 @@ class TrackService(
 
     fun saveUserFilter(userFilter: UserFilter, token : String): String {
         val member : Member? = memberRepository.findMemberByAccessToken(token)
+        userFilter.displayName = member!!.displayName
         userFilterRepository.findUserFilterByDisplayName(member!!.displayName)?: userFilterRepository.save(userFilter)
         return "save success"
     }

@@ -12,13 +12,9 @@ const useCheckToken = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("token", token);
     if (token) {
-      console.log("token", token);
       isTokenValid(token).then((isValid) => {
-        console.log(isValid)
         if (!isValid) {
-          console.log("set token to null")
           setToken(null);
           router.push("/login");
         }
@@ -31,25 +27,8 @@ const useCheckToken = () => {
 
 const Home: NextPage = () => {
   useCheckToken();
-  const token = useToken();
-  const router = useRouter();
 
-  const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
-     onError:(err)=>{
-      console.log("onError", err);
-      router.push('/filter')
-    },
-  });
-
-  if (songsQuery.status === "loading") {
-    return <span>Loading...</span>;
-  }
-
-  if (songsQuery.status === "error") {
-    return <span>Error</span>;
-  }
-
-  return <WebPlayback data={songsQuery.data} />;
+  return <WebPlayback />;
 };
 
 export default Home;

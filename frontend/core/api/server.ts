@@ -8,8 +8,11 @@ export const fetchSongs = async (access_token: string) => {
         Authorization: `Bearer ${access_token}`,
       },
     });
-    console.log("result!!!",res);
+    if(res.status === 404){
+      throw new Error("fetching result failed");
+    }
     const result = await res.json(); // recommendation results
+    console.log(result);
     return result;
 };
 
@@ -43,14 +46,12 @@ export const requestLogin = async () => {
 };
 
 export const getToken = async (code: string) => {
-  console.log("get token occured");
   let res = fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/get-token?code=${code}`);
   return res.then((res) => res.json());
 };
 
 export const sendFilter = async (data: any, access_token: string) => {
   // send filter data of user
-  console.log("filter data",data);
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/saveUserFilter`, {
     method: "POST",
     body: JSON.stringify(data),

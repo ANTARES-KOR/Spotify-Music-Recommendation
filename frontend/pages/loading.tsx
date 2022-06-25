@@ -19,10 +19,8 @@ const LoadingPage = () => {
     }
     getToken(code)
       .then((res) => {
-        console.log("get token succeed", res);
         
         setToken(JSON.stringify(res.access_token))
-        console.log("push to home");
         router.push("/");
         
       })

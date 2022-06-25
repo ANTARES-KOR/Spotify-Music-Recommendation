@@ -1,5 +1,5 @@
 import { css, jsx } from "@emotion/react";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 
 type Props = {
   title: string;
@@ -12,7 +12,7 @@ type SingleSong = {
 };
 
 const SingleSong: SingleSong = ({ info, onPlay }) => {
-  const { title, artistName, albumImg, uri, contentLength } = info;
+  const { track_name, artist_name, album_image, uri, duration_ms } = info;
   const onClick = () => {
     onPlay(uri, true);
   };
@@ -22,18 +22,23 @@ const SingleSong: SingleSong = ({ info, onPlay }) => {
 
     return `${min}:${sec < 10 ? "0" : ""}${sec}`;
   };
+
+  useEffect(() => {
+    console.log(info)
+  }, [info]);
+
   return (
     <div css={containerStyle}>
       <div css={imgBlockStyle}>
-        <img src={albumImg} />
+        <img src={album_image} />
       </div>
 
       <div css={blockStyle}>
-        <h3 css={titleStyle}>{title}</h3>
-        <p css={artistStyle}>{artistName}</p>
+        <h3 css={titleStyle}>{track_name}</h3>
+        <p css={artistStyle}>{artist_name}</p>
       </div>
       <div css={sideBlockStyle} className="side-block">
-        <p>{convertTime(contentLength)}</p>
+        <p>{convertTime(duration_ms)}</p>
         <button
           onClick={() => {
             onClick();

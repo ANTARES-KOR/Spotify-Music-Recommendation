@@ -1,3 +1,5 @@
+package todaysmusic.spotifyrecommendation.controller
+
 import todaysmusic.spotifyrecommendation.domain.Member
 import todaysmusic.spotifyrecommendation.repository.MemberRepository
 import todaysmusic.spotifyrecommendation.service.MemberService
@@ -20,8 +22,8 @@ import java.util.*
 class FrontEndController(
     @Autowired val userFilterRepository: UserFilterRepository,
     @Autowired val trackService: TrackService,
-    val memberService: MemberService,
-    val memberRepository: MemberRepository
+    @Autowired val memberService: MemberService,
+    @Autowired val memberRepository: MemberRepository
 ) {
 
     @GetMapping("/getFilterInitTrack")
@@ -89,7 +91,9 @@ class FrontEndController(
         @RequestBody userFilter: UserFilter,
         @RequestHeader(value = "Authorization") accessToken : String
     ) : Any {
+        println("hi")
         val token : String = accessToken.replace("Bearer ","").replace("\"","")
+        println(userFilter)
         println(token)
         // 토큰
         if(memberService.checkTokenValidation(token)){

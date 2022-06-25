@@ -5,6 +5,8 @@ import Player from "./Player";
 import Playlist from "./Playlist";
 import { useRouter } from "next/router";
 import { useToken } from "../context/TokenContex";
+import { useQuery } from "react-query";
+import { fetchSongs } from "../core/api/server";
 
 type Props = {
   uris: string[];
@@ -31,7 +33,7 @@ const track: Track = {
   artists: [{ name: "" }],
 };
 
-const WebPlayback: WebPlayback = ({ data }) => {
+const WebPlayback = () => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
@@ -40,6 +42,13 @@ const WebPlayback: WebPlayback = ({ data }) => {
   const [device_id, setId] = useState("");
   const token = useToken();
   const router = useRouter();
+
+
+  const {data, isLoading}  = useQuery(["songsQuery", token], () => fetchSongs(token), {
+    onError:(err)=>{
+     router.push('/filter')
+    },
+  });
 
   const onPlay = (uri: string | undefined, is_new: boolean) => {
     if (uri === undefined) {
@@ -84,8 +93,7 @@ const WebPlayback: WebPlayback = ({ data }) => {
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          console.log("oauth token",token);
-          cb(token);
+          cb(JSON.parse(token));
         },
         volume: 0.5,
       });

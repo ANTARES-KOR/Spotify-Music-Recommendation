@@ -2,14 +2,13 @@ import SingleSong from "./SingleSong";
 import { css, jsx } from "@emotion/react";
 
 const Playlist = ({ onPlay, data }) => {
-  console.log("playlist", data);
   return (
     <div css={containerStyle}>
       <div css={headerImage}>
         <h1>My Music</h1>
       </div>
       <div css={songsContainerStyle}>
-        {data.map((info, i) => (
+        {data?.map((info, i) => (
           <SingleSong onPlay={onPlay} key={i} info={info} />
         ))}
       </div>
