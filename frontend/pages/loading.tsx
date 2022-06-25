@@ -3,19 +3,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
 import { useQueryClient } from "react-query";
+import { useSetToken } from "../context/TokenContex";
 
 const LoadingPage = () => {
   const router = useRouter();
   const [current_code, setCode] = useState("");
-
-  const queryClient = useQueryClient();
+  const setToken = useSetToken();
 
   useEffect(() => {
     const code = router.asPath.split("code=")[1];
     setCode(code);
-    console.log("useeffect of loadingpage");
-    console.log(code);
-    // console.log("get code succeed", code);
     if (code === current_code) {
       router.push("/");
       return;
@@ -23,14 +20,16 @@ const LoadingPage = () => {
     getToken(code)
       .then((res) => {
         console.log("get token succeed", res);
-        localStorage.setItem("access_token", JSON.stringify(res.access_token));
+        
+        setToken(JSON.stringify(res.access_token))
+        console.log("push to home");
         router.push("/");
-        queryClient.invalidateQueries("token"); // 기존 캐시를 무효화 -> 새로 가져오기
+        
       })
       .catch((err) => {
         console.log("get token failed", err);
       });
-  }, [router, queryClient, current_code]);
+  }, [router,  current_code]);
 
   return (
     <div

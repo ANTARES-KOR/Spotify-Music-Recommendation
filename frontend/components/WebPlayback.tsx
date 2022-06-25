@@ -35,14 +35,11 @@ const WebPlayback: WebPlayback = ({ data }) => {
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
-  const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
   const [current_position, setPosition] = useState(0);
   const [device_id, setId] = useState("");
   const token = useToken();
   const router = useRouter();
-
-  console.log("player", player);
 
   const onPlay = (uri: string | undefined, is_new: boolean) => {
     if (uri === undefined) {
@@ -62,7 +59,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
   };
 
   const onPause = () => {
-    console.log("onPause clicked", device_id);
     pause({ device_id, playerInstance: player });
   };
 
@@ -77,7 +73,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
   };
 
   useEffect(() => {
-    console.log("webplayback useeffect");
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
@@ -85,13 +80,12 @@ const WebPlayback: WebPlayback = ({ data }) => {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      console.log("log");
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
+          console.log("oauth token",token);
           cb(token);
-          console.log("log2", localStorage.getItem("access_token"));
         },
         volume: 0.5,
       });
@@ -145,7 +139,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
         />
         <button
           onClick={() => {
-            localStorage.removeItem("access_token");
             router.replace("/login");
           }}
           css={css`

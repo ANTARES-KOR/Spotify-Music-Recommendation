@@ -1,11 +1,14 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useState } from "react";
+import { sendFilter } from '../core/api/server';
 import NoSSR from "react-no-ssr";
 import { css } from "@emotion/react";
 import TrackSelect from "../components/filter/TrackSelect";
 import ImageSelect from "../components/filter/MoodSelect";
 import EmotionSelect from "../components/filter/EmotionSelect";
+import { useToken } from "../context/TokenContex";
+import { useRouter } from "next/router";
 
 const Tracks = [
   {
@@ -59,6 +62,8 @@ const Home: NextPage = () => {
   const [speed, setSpeed] = useState(0);
   const [emotion, setEmotion] = useState(0);
   const [music, setMusic] = useState("");
+  const token = useToken();
+  const router = useRouter();
 
   const onBack = () => {
     setStage((prev) => {
@@ -66,6 +71,17 @@ const Home: NextPage = () => {
       return prev - 1;
     });
   };
+
+  const onClick = (emotion:number) => {
+    const body = {
+      mood,
+      speed,
+      emotion,
+      music
+    };
+    sendFilter(body,token);
+    router.push("/");
+  }
 
   return (
     <div style={bodyss}>
@@ -223,6 +239,7 @@ const Home: NextPage = () => {
                       selected={emotion === item.emotion_number}
                       onClick={() => {
                         setEmotion(item.emotion_number);
+                        onClick(item.emotion_number);
                       }}
                       description={item.description}
                       image_url={item.image_url}
