@@ -8,6 +8,7 @@ export const fetchSongs = async (access_token: string) => {
         Authorization: `Bearer ${access_token}`,
       },
     });
+    console.log("result!!!",res);
     const result = await res.json(); // recommendation results
     return result;
 };

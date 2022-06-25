@@ -1,8 +1,10 @@
 package todaysmusic.spotifyrecommendation.service
 
 import org.springframework.stereotype.Service
+import todaysmusic.spotifyrecommendation.domain.Member
 import todaysmusic.spotifyrecommendation.domain.Track
 import todaysmusic.spotifyrecommendation.domain.UserFilter
+import todaysmusic.spotifyrecommendation.repository.MemberRepository
 import todaysmusic.spotifyrecommendation.repository.PreferenceTrackRepository
 import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
 
@@ -39,7 +41,7 @@ import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
 @Service
 class TrackService(
     val userFilterRepository: UserFilterRepository,
-    val perferenceTrackRepository: PreferenceTrackRepository,
+    val memberRepository: MemberRepository
 ) {
 
     fun getInitFilterList() : List<Track>{
@@ -52,8 +54,9 @@ class TrackService(
         return returnTrackList
     }
 
-    fun saveUserFilter(userFilter: UserFilter): String {
-        userFilterRepository.findUserFilterByUserEmail(userFilter.userEmail)?: userFilterRepository.save(userFilter)
+    fun saveUserFilter(userFilter: UserFilter, token : String): String {
+        val member : Member? = memberRepository.findMemberByAccessToken(token)
+        userFilterRepository.findUserFilterByDisplayName(member!!.displayName)?: userFilterRepository.save(userFilter)
         return "save success"
     }
 

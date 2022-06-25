@@ -11,12 +11,11 @@ class Track(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id : Long? = null,
     var uri : String,
-    var title : String,
+    var track_name : String,
     @Column(name ="artist_name")
-    var artistName : String,
+    var artist_name : String,
     @Column(name = "album_img")
-    var albumImg : String,
-    @Column(name ="content_length")
-    var contentLength : Long
-
+    var album_image : String,
+    @Column(name ="duration_ms")
+    var duration_ms : Long
 )

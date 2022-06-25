@@ -6,5 +6,5 @@ import todaysmusic.spotifyrecommendation.domain.UserFilter
 
 @Repository
 interface UserFilterRepository : JpaRepository<UserFilter,Long>{
-    fun findUserFilterByUserEmail(userEmail : String) : UserFilter?
+    fun findUserFilterByDisplayName(displayName : String) : UserFilter?
 }

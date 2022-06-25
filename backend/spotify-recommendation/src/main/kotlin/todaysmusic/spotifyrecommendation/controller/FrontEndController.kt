@@ -1,20 +1,27 @@
-package todaysmusic.spotifyrecommendation.controller
+import todaysmusic.spotifyrecommendation.domain.Member
+import todaysmusic.spotifyrecommendation.repository.MemberRepository
+import todaysmusic.spotifyrecommendation.service.MemberService
 
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
-import todaysmusic.spotifyrecommendation.domain.UserFilter
-import todaysmusic.spotifyrecommendation.domain.FilterInitData
+import org.springframework.web.client.RestTemplate
 import todaysmusic.spotifyrecommendation.domain.Track
+import todaysmusic.spotifyrecommendation.domain.UserFilter
 import todaysmusic.spotifyrecommendation.repository.UserFilterRepository
 import todaysmusic.spotifyrecommendation.service.TrackService
+import java.util.*
 
 @RestController
 @RequestMapping("/api")
 class FrontEndController(
     @Autowired val userFilterRepository: UserFilterRepository,
-    @Autowired val trackService: TrackService
+    @Autowired val trackService: TrackService,
+    val memberService: MemberService,
+    val memberRepository: MemberRepository
 ) {
 
     @GetMapping("/getFilterInitTrack")
@@ -24,52 +31,72 @@ class FrontEndController(
 
     @GetMapping("/getRecommandTrackList")
     fun responseRecommandTrackList(
-        @RequestParam code : String
+        @RequestHeader(value = "Authorization") accessToken : String
     ): Any{
         // 코드 확인
-        println(code)
-        // 토큰 처리
-        // 유저가 필터를 선택한 적이 있다면
-        if(code  == "hi"){
-            // model을 통해서 가져오기
-            return ResponseEntity.ok().body("success")
-        }else{
-            // 없다면 error
-//            return ResponseEntity.noContent().
-//            he.status(HttpStatus.NOT_FOUND)
-            return ResponseEntity.ok().body("non-success")
-        }
+        val token : String = accessToken.replace("Bearer ","").replace("\"","")
+        println(token)
 
+        if(memberService.checkTokenValidation(token)){
+            val member : Member? = memberRepository.findMemberByAccessToken(token)
+            if(member !=null){
+                val userFilter = userFilterRepository.findUserFilterByDisplayName(member.displayName)
+                if(userFilter!=null){
+                    val requestUri: String = "http://spoti-publi-813mgem2jt2r-1181560969.ap-northeast-2.elb.amazonaws.com/model/cbr"
+                    val restTemplate: RestTemplate = RestTemplate()
+                    val headers = HttpHeaders()
+                    headers.add("Content-Type","application/json")
+
+
+                    val multiValueMap : HashMap <String, Any> = HashMap()
+                    multiValueMap["music"] = userFilter!!.music
+                    multiValueMap["mood"] = userFilter.mood
+                    multiValueMap["speed"] = userFilter.speed
+                    multiValueMap["emotion"] = userFilter.emotion
+                    val request: HttpEntity<HashMap<String, Any>> = HttpEntity(multiValueMap, headers)
+
+
+                    println(request)
+                    var response : ResponseEntity<String> =restTemplate.exchange(
+                        requestUri,
+                        HttpMethod.POST,
+                        request,
+                        String::class.java
+                    )
+                    println(response.body)
+
+                    val objMapper  = ObjectMapper()
+                    var trackArr : List<Track>? = objMapper.readValue(response.body.toString())
+
+                    println(trackArr?.get(0)?.track_name)
+                    println(trackArr?.get(0)?.duration_ms)
+                    println(trackArr?.get(0)?.album_image)
+                    println(trackArr?.get(0)?.artist_name)
+                    println(trackArr?.get(0)?.uri)
+                    println(response.body)
+                    return ResponseEntity.ok().body(trackArr)
+                }
+
+            }
+
+        }
+            return ResponseEntity<Void>(HttpStatus.NOT_FOUND)
     }
 
 
     @PostMapping("/saveUserFilter")
     fun saveUserFilter(
-        @RequestBody userFilter : UserFilter,
-        @RequestParam token : String
+        @RequestBody userFilter: UserFilter,
+        @RequestHeader(value = "Authorization") accessToken : String
     ) : Any {
+        val token : String = accessToken.replace("Bearer ","").replace("\"","")
         println(token)
         // 토큰
-        trackService.saveUserFilter(userFilter)
+        if(memberService.checkTokenValidation(token)){
+            trackService.saveUserFilter(userFilter,token)
+        }
+
         return ResponseEntity.ok("success")
     }
-
-    @GetMapping("/getPlayList")
-    fun getPlayList(
-        @RequestParam token : String
-    ) : ResponseEntity<Any>{
-        //토큰 유효 확인
-
-        //userFilter가 있다면
-        if(userFilterRepository.findUserFilterByUserEmail("bell1902@naver.com") !=null) {
-            //model로 request
-            return ResponseEntity.ok().body("track is now")
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("")
-        }
-    }
-
-
-
 
 }

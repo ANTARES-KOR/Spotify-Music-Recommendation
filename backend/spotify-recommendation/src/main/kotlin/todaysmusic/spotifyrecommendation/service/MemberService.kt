@@ -63,6 +63,10 @@ class MemberService(
         return response
     }
 
+//    private fun validateDuplicateMember(member: Member): Boolean {
+//        (return memberRepository.findMemberByDisplayName(member.displayName) != null)
+//    }
+
     private fun validateDuplicateMember(member: Member): Boolean {
         (return memberRepository.findMemberByAccessToken(member.accessToken) != null)
     }

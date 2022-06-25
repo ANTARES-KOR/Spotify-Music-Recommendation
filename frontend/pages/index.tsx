@@ -36,8 +36,9 @@ const Home: NextPage = () => {
 
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
      onError:(err)=>{
-      console.log("onError",err);
-      router.push('/filter')},
+      console.log("onError", err);
+      router.push('/filter')
+    },
   });
 
   if (songsQuery.status === "loading") {
