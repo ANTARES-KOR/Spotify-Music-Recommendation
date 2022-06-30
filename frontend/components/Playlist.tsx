@@ -2,7 +2,6 @@ import SingleSong from "./SingleSong";
 import { css, jsx } from "@emotion/react";
 
 const Playlist = ({ onPlay, data }) => {
-  console.log("playlist", data);
   return (
     <div css={containerStyle}>
       <div css={headerImage}>

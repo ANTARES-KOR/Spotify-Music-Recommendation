@@ -12,13 +12,9 @@ const useCheckToken = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("token", token);
     if (token) {
-      console.log("token", token);
       isTokenValid(token).then((isValid) => {
-        console.log(isValid)
         if (!isValid) {
-          console.log("set token to null")
           setToken(null);
           router.push("/login");
         }
@@ -35,9 +31,9 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
-     onError:(err)=>{
-      console.log("onError",err);
-      router.push('/filter')},
+    onError: (err) => {
+      router.push("/filter");
+    },
   });
 
   if (songsQuery.status === "loading") {
