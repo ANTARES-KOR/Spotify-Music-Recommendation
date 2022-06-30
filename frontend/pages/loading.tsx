@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
 import { useQueryClient } from "react-query";
-import { useSetToken } from "../context/TokenContex";
+import { useSetToken } from "../context/TokenContext";
 
 const LoadingPage = () => {
   const router = useRouter();
@@ -19,17 +19,13 @@ const LoadingPage = () => {
     }
     getToken(code)
       .then((res) => {
-        console.log("get token succeed", res);
-        
-        setToken(JSON.stringify(res.access_token))
-        console.log("push to home");
+        setToken(JSON.stringify(res.access_token));
         router.push("/");
-        
       })
       .catch((err) => {
         console.log("get token failed", err);
       });
-  }, [router,  current_code]);
+  }, [router, current_code]);
 
   return (
     <div
