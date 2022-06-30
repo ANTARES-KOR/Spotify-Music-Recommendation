@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
 import { useQueryClient } from "react-query";
-import { useSetToken } from "../context/TokenContex";
+import { useSetToken } from "../context/TokenContext";
 
 const LoadingPage = () => {
   const router = useRouter();

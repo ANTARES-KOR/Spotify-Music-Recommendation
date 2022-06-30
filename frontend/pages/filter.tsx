@@ -1,13 +1,13 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import React, { useState } from "react";
-import { sendFilter } from '../core/api/server';
+import { sendFilter } from "../core/api/server";
 import NoSSR from "react-no-ssr";
 import { css } from "@emotion/react";
 import TrackSelect from "../components/filter/TrackSelect";
 import ImageSelect from "../components/filter/MoodSelect";
 import EmotionSelect from "../components/filter/EmotionSelect";
-import { useToken } from "../context/TokenContex";
+import { useToken } from "../context/TokenContext";
 import { useRouter } from "next/router";
 
 const Tracks = [
@@ -72,16 +72,16 @@ const Home: NextPage = () => {
     });
   };
 
-  const onClick = (emotion:number) => {
+  const onClick = (emotion: number) => {
     const body = {
       mood,
       speed,
       emotion,
-      music
+      music,
     };
-    sendFilter(body,token);
+    sendFilter(body, token);
     router.push("/");
-  }
+  };
 
   return (
     <div style={bodyss}>

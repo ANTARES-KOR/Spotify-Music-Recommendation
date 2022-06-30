@@ -4,7 +4,7 @@ import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
 import Player from "./Player";
 import Playlist from "./Playlist";
 import { useRouter } from "next/router";
-import { useToken } from "../context/TokenContex";
+import { useToken } from "../context/TokenContext";
 
 type Props = {
   uris: string[];
@@ -84,7 +84,7 @@ const WebPlayback: WebPlayback = ({ data }) => {
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          console.log("oauth token",token);
+          console.log("oauth token", token);
           cb(token);
         },
         volume: 0.5,

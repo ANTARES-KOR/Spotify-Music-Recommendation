@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import WebPlayback from "../components/WebPlayback";
 import { useQuery } from "react-query";
 import { fetchSample, fetchSongs, isTokenValid } from "../core/api/server";
-import { useSetToken, useToken } from "../context/TokenContex";
+import { useSetToken, useToken } from "../context/TokenContext";
 
 const useCheckToken = () => {
   const token = useToken();

@@ -5,7 +5,7 @@ import { Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { global } from "../styles/global";
-import { TokenProvider } from "../context/TokenContex";
+import { TokenProvider } from "../context/TokenContext";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
