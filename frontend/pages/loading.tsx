@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
 import { useQueryClient } from "react-query";
 import { useSetToken } from "../context/TokenContext";
+import Loading from "../components/Loading";
 
 const LoadingPage = () => {
   const router = useRouter();
@@ -27,32 +28,7 @@ const LoadingPage = () => {
       });
   }, [router, current_code]);
 
-  return (
-    <div
-      css={css`
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      `}
-    >
-      <h3
-        css={css`
-          font-size: 30px;
-        `}
-      >
-        Loading...
-      </h3>
-      <img
-        src="/loadingcat.gif"
-        css={css`
-          width: 400px;
-        `}
-      />
-    </div>
-  );
+  return <Loading />;
 };
 
 export default LoadingPage;

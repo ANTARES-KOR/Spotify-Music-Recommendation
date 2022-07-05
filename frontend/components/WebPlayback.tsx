@@ -32,6 +32,7 @@ const track: Track = {
 };
 
 const WebPlayback: WebPlayback = ({ data }) => {
+  console.log("WebPlayback get ", data);
   const [player, setPlayer] = useState(undefined);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
@@ -84,8 +85,7 @@ const WebPlayback: WebPlayback = ({ data }) => {
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          console.log("oauth token", token);
-          cb(token);
+          cb(token?.replace(/\"/g, ""));
         },
         volume: 0.5,
       });
