@@ -41,38 +41,3 @@ export const pause = ({
     });
   });
 };
-
-export const nextTrack = ({
-  device_id,
-  playerInstance: {
-    _options: { getOAuthToken },
-  },
-}: Props) => {
-  getOAuthToken((access_token: string) => {
-    fetch(`https://api.spotify.com/v1/me/player/next?device_id=${device_id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-  });
-};
-
-export const addTrack = async ({
-  spotify_uri,
-  device_id,
-  playerInstance: {
-    _options: { getOAuthToken },
-  },
-}: Props) => {
-  getOAuthToken((access_token: string) => {
-    fetch(`https://api.spotify.com/v1/me/player/queue?uri=${spotify_uri}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-  });
-};

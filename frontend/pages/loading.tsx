@@ -2,7 +2,6 @@ import { css, jsx } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
-import { useQueryClient } from "react-query";
 import { useSetToken } from "../context/TokenContext";
 import Loading from "../components/Loading";
 
@@ -20,13 +19,15 @@ const LoadingPage = () => {
     }
     getToken(code)
       .then((res) => {
-        setToken(JSON.stringify(res.access_token));
+        const token = JSON.stringify(res.access_token);
+        setToken(token);
+        localStorage.setItem("access_token", token);
         router.push("/");
       })
       .catch((err) => {
         console.log("get token failed", err);
       });
-  }, [router, current_code]);
+  }, [router, setToken, current_code]);
 
   return <Loading />;
 };

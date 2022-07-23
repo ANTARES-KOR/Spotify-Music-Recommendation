@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from "react";
 import { css, jsx } from "@emotion/react";
-import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
+import { play, pause } from "../core/api/spotifysdk";
 import Player from "./Player";
 import Playlist from "./Playlist";
 import { useRouter } from "next/router";
@@ -32,8 +32,7 @@ const track: Track = {
 };
 
 const WebPlayback: WebPlayback = ({ data }) => {
-  console.log("WebPlayback get ", data);
-  const [player, setPlayer] = useState(undefined);
+  const [player, setPlayer] = useState(null);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
   const [current_track, setTrack] = useState(track);
@@ -61,16 +60,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
 
   const onPause = () => {
     pause({ device_id, playerInstance: player });
-  };
-
-  const onNextTrack = () => {
-    addTrack({
-      spotify_uri: "spotify:track:5m2tbM2w8mG76uwFgla2iF",
-      device_id,
-      playerInstance: player,
-    }).then(() => {
-      nextTrack({ device_id, playerInstance: player });
-    });
   };
 
   useEffect(() => {
@@ -105,8 +94,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
         if (!state) {
           return;
         }
-        console.log("state changed", state);
-
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
         setPosition(state.position);
@@ -164,7 +151,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
             onPlay={onPlay}
             onPause={onPause}
             is_paused={is_paused}
-            onNextTrack={onNextTrack}
             current_track={current_track}
           />
         </div>
