@@ -15,7 +15,7 @@ export const fetchSongs = async (access_token: string) => {
   const tmpResult = [
     {
       id: null,
-      title: "butter",
+      title: "Butter",
       uri: "spotify:track:4saklk6nie3yiGePpBwUoc",
       artistName: "BTS",
       albumImg:
@@ -64,7 +64,7 @@ export const fetchSongs = async (access_token: string) => {
 
 export const isTokenValid = async (access_token: string) => {
   // check the validity of exist access token
-
+  console.log("isTokenValid executed");
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/token/validate`,

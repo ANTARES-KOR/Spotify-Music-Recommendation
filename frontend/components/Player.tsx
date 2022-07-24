@@ -1,7 +1,6 @@
 import { css, jsx } from "@emotion/react";
 
 const Player = ({ onPlay, onPause, is_paused, onNextTrack, current_track }) => {
-  console.log("current track", current_track);
   return (
     <div css={containerStyle}>
       <div css={imgContainerStyle}>

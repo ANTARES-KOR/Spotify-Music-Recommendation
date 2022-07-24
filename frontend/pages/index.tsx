@@ -1,34 +1,29 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import WebPlayback from "../components/WebPlayback";
 import { useQuery } from "react-query";
 import { fetchSongs, isTokenValid } from "../core/api/server";
 import { useSetToken, useToken } from "../context/TokenContext";
+import usePush from "../hooks/usePush";
+import WebPlayback from "../components/WebPlayback";
 import Loading from "../components/Loading";
 
 const useCheckToken = () => {
   const token = useToken();
   const setToken = useSetToken();
-  const router = useRouter();
+  const push = usePush();
 
   useEffect(() => {
-    if (localStorage.getItem("access_token") !== null) {
-      setToken(JSON.parse(localStorage.getItem("access_token")!));
-    }
-    if (token) {
-      isTokenValid(token).then((isValid) => {
-        if (!isValid) {
-          setToken(null);
-          router.push("/login");
-        } else {
-          router.push("/");
-        }
-      });
+    if (token === null) {
+      if (localStorage.getItem("access_token") !== null) {
+        setToken(JSON.parse(localStorage.getItem("access_token")!));
+      } else {
+        push("/login");
+      }
     } else {
-      router.push("/login");
+      push("/");
     }
-  }, [router, setToken, token]);
+  }, [push, token, setToken]);
 };
 
 const Home: NextPage = () => {
@@ -37,9 +32,6 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
-    onSuccess: () => {
-      console.log(songsQuery.data);
-    },
     onError: (err) => {
       router.push("/filter");
     },
