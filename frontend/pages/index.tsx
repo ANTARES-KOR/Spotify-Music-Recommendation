@@ -15,8 +15,16 @@ const useCheckToken = () => {
 
   useEffect(() => {
     if (token === null) {
-      if (localStorage.getItem("access_token") !== null) {
-        setToken(JSON.parse(localStorage.getItem("access_token")!));
+      const savedToken = JSON.parse(localStorage.getItem("access_token")!);
+      if (savedToken !== null) {
+        isTokenValid(savedToken).then((isValid) => {
+          console.log("the result of isTokenValid", isValid);
+          if (isValid) {
+            setToken(savedToken);
+          } else {
+            push("/login");
+          }
+        });
       } else {
         push("/login");
       }
