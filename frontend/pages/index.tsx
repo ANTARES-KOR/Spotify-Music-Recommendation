@@ -12,10 +12,7 @@ const useCheckToken = () => {
   const token = useToken();
   const setToken = useSetToken();
   const push = usePush();
-  console.log("useCheckToken", token);
-
   useEffect(() => {
-    console.log("useEffect of useCheckToken", token);
     if (token === null) {
       const savedToken = JSON.parse(localStorage.getItem("access_token")!);
       if (savedToken) {
@@ -39,12 +36,8 @@ const Home: NextPage = () => {
   useCheckToken();
   const token = useToken();
   const router = useRouter();
-  console.log("Home", token);
 
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
-    onSuccess: (res) => {
-      console.log("songsQuery Happend!");
-    },
     onError: (err) => {
       router.push("/filter");
     },

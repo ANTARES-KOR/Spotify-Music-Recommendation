@@ -5,13 +5,11 @@ import { useSetToken } from "../context/TokenContext";
 import Loading from "../components/Loading";
 
 const LoadingPage = () => {
-  console.log("LoginPage");
   const router = useRouter();
   const [current_code, setCode] = useState("");
   const setToken = useSetToken();
 
   useEffect(() => {
-    console.log("useEffect of LoginPage");
     const code = router.asPath.split("code=")[1];
     setCode(code);
     if (code === current_code) {
@@ -21,7 +19,6 @@ const LoadingPage = () => {
     getToken(code)
       .then((res) => {
         const token = JSON.stringify(res.access_token);
-        console.log("getToken succeed", token);
         setToken(token);
         localStorage.setItem("access_token", token);
         router.push("/");

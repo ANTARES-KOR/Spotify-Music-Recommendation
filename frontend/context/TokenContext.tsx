@@ -5,11 +5,7 @@ const SetTokenContext = createContext<(token: string | null) => void>(() => {});
 
 export const TokenProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
-  console.log("TokenProvider", token);
 
-  useEffect(() => {
-    console.log("useEffect of TokenProvider", token);
-  });
   return (
     <TokenContext.Provider value={token}>
       <SetTokenContext.Provider value={setToken}>

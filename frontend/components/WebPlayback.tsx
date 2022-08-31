@@ -41,8 +41,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
   const token = useToken();
   const router = useRouter();
 
-  console.log("WebPlayback", token);
-
   const onPlay = (uri: string | undefined, is_new: boolean) => {
     if (uri === undefined) {
       play({
@@ -65,7 +63,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
   };
 
   useEffect(() => {
-    console.log("useEffect of WebPlayback", token);
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
@@ -73,15 +70,10 @@ const WebPlayback: WebPlayback = ({ data }) => {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      console.log("onSpotifyWebPlaybackSDKReady");
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          console.log(
-            "callback function of onSpotifyWebPlaybackSDKReady",
-            token
-          );
           cb(token?.replace(/\"/g, ""));
         },
         volume: 0.5,
