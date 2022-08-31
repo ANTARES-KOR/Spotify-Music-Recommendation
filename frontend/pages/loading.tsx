@@ -1,16 +1,17 @@
-import { css, jsx } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getToken } from "../core/api/server";
-import { useQueryClient } from "react-query";
 import { useSetToken } from "../context/TokenContext";
+import Loading from "../components/Loading";
 
 const LoadingPage = () => {
+  console.log("LoginPage");
   const router = useRouter();
   const [current_code, setCode] = useState("");
   const setToken = useSetToken();
 
   useEffect(() => {
+    console.log("useEffect of LoginPage");
     const code = router.asPath.split("code=")[1];
     setCode(code);
     if (code === current_code) {
@@ -19,40 +20,18 @@ const LoadingPage = () => {
     }
     getToken(code)
       .then((res) => {
-        setToken(JSON.stringify(res.access_token));
+        const token = JSON.stringify(res.access_token);
+        console.log("getToken succeed", token);
+        setToken(token);
+        localStorage.setItem("access_token", token);
         router.push("/");
       })
       .catch((err) => {
-        console.log("get token failed", err);
+        console.error("get token failed", err);
       });
-  }, [router, current_code]);
+  }, [router, setToken, current_code]);
 
-  return (
-    <div
-      css={css`
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      `}
-    >
-      <h3
-        css={css`
-          font-size: 30px;
-        `}
-      >
-        Loading...
-      </h3>
-      <img
-        src="/loadingcat.gif"
-        css={css`
-          width: 400px;
-        `}
-      />
-    </div>
-  );
+  return <Loading />;
 };
 
 export default LoadingPage;

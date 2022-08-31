@@ -1,43 +1,57 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
-import WebPlayback from "../components/WebPlayback";
+import { useEffect } from "react";
 import { useQuery } from "react-query";
-import { fetchSample, fetchSongs, isTokenValid } from "../core/api/server";
+import { fetchSongs, isTokenValid } from "../core/api/server";
 import { useSetToken, useToken } from "../context/TokenContext";
+import usePush from "../hooks/usePush";
+import WebPlayback from "../components/WebPlayback";
+import Loading from "../components/Loading";
 
 const useCheckToken = () => {
   const token = useToken();
   const setToken = useSetToken();
-  const router = useRouter();
+  const push = usePush();
+  console.log("useCheckToken", token);
 
   useEffect(() => {
-    if (token) {
-      isTokenValid(token).then((isValid) => {
-        if (!isValid) {
-          setToken(null);
-          router.push("/login");
-        }
-      });
+    console.log("useEffect of useCheckToken", token);
+    if (token === null) {
+      const savedToken = JSON.parse(localStorage.getItem("access_token")!);
+      if (savedToken) {
+        isTokenValid(savedToken).then((isValid) => {
+          if (isValid) {
+            setToken(savedToken);
+          } else {
+            push("/login");
+          }
+        });
+      } else {
+        push("/login");
+      }
     } else {
-      router.push("/login");
+      push("/");
     }
-  }, [router, setToken, token]);
+  }, [push, token, setToken]);
 };
 
 const Home: NextPage = () => {
   useCheckToken();
   const token = useToken();
   const router = useRouter();
+  console.log("Home", token);
 
   const songsQuery = useQuery(["songsQuery", token], () => fetchSongs(token), {
+    onSuccess: (res) => {
+      console.log("songsQuery Happend!");
+    },
     onError: (err) => {
       router.push("/filter");
     },
   });
 
   if (songsQuery.status === "loading") {
-    return <span>Loading...</span>;
+    return <Loading />;
   }
 
   if (songsQuery.status === "error") {

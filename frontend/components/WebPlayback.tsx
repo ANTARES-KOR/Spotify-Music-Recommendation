@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from "react";
 import { css, jsx } from "@emotion/react";
-import { play, pause, addTrack, nextTrack } from "../core/api/spotifysdk";
+import { play, pause } from "../core/api/spotifysdk";
 import Player from "./Player";
 import Playlist from "./Playlist";
 import { useRouter } from "next/router";
@@ -32,7 +32,7 @@ const track: Track = {
 };
 
 const WebPlayback: WebPlayback = ({ data }) => {
-  const [player, setPlayer] = useState(undefined);
+  const [player, setPlayer] = useState(null);
   const [is_paused, setPaused] = useState(true);
   const [is_ready, setReady] = useState(false);
   const [current_track, setTrack] = useState(track);
@@ -40,6 +40,8 @@ const WebPlayback: WebPlayback = ({ data }) => {
   const [device_id, setId] = useState("");
   const token = useToken();
   const router = useRouter();
+
+  console.log("WebPlayback", token);
 
   const onPlay = (uri: string | undefined, is_new: boolean) => {
     if (uri === undefined) {
@@ -62,17 +64,8 @@ const WebPlayback: WebPlayback = ({ data }) => {
     pause({ device_id, playerInstance: player });
   };
 
-  const onNextTrack = () => {
-    addTrack({
-      spotify_uri: "spotify:track:5m2tbM2w8mG76uwFgla2iF",
-      device_id,
-      playerInstance: player,
-    }).then(() => {
-      nextTrack({ device_id, playerInstance: player });
-    });
-  };
-
   useEffect(() => {
+    console.log("useEffect of WebPlayback", token);
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
@@ -80,12 +73,16 @@ const WebPlayback: WebPlayback = ({ data }) => {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log("onSpotifyWebPlaybackSDKReady");
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: any) => {
           // Run code to get a fresh access token
-          console.log("oauth token", token);
-          cb(token);
+          console.log(
+            "callback function of onSpotifyWebPlaybackSDKReady",
+            token
+          );
+          cb(token?.replace(/\"/g, ""));
         },
         volume: 0.5,
       });
@@ -105,8 +102,6 @@ const WebPlayback: WebPlayback = ({ data }) => {
         if (!state) {
           return;
         }
-        console.log("state changed", state);
-
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
         setPosition(state.position);
@@ -114,62 +109,67 @@ const WebPlayback: WebPlayback = ({ data }) => {
 
       player.connect();
     };
+
+    return () => {
+      setReady(false);
+    };
   }, [token]);
 
   return (
-    is_ready &&
-    player && (
-      <div
-        css={css`
-          background-color: #ecf0f1;
-          position: relative;
-        `}
-      >
+    <div>
+      <p>뿌</p>
+      {is_ready && (
         <div
           css={css`
-            background-image: url("./logo.png");
-            background-size: cover;
-            background-position: center;
-            width: 125px;
-            height: 37.5px;
-            position: absolute;
-            left: 22px;
-            top: 28px;
-          `}
-        />
-        <button
-          onClick={() => {
-            router.replace("/login");
-          }}
-          css={css`
-            color: #555555;
-            position: absolute;
-            left: 32px;
-            bottom: 40px;
-            font-size: 18px;
-          `}
-        >
-          Logout
-        </button>
-        <div
-          css={css`
+            background-color: #ecf0f1;
             position: relative;
-            width: 75%;
-            max-width: 1341px;
-            margin: auto;
           `}
         >
-          <Playlist onPlay={onPlay} data={data} />
-          <Player
-            onPlay={onPlay}
-            onPause={onPause}
-            is_paused={is_paused}
-            onNextTrack={onNextTrack}
-            current_track={current_track}
+          <div
+            css={css`
+              background-image: url("./logo.png");
+              background-size: cover;
+              background-position: center;
+              width: 125px;
+              height: 37.5px;
+              position: absolute;
+              left: 22px;
+              top: 28px;
+            `}
           />
+          <button
+            onClick={() => {
+              router.replace("/login");
+            }}
+            css={css`
+              color: #555555;
+              position: absolute;
+              left: 32px;
+              bottom: 40px;
+              font-size: 18px;
+            `}
+          >
+            Logout
+          </button>
+          <div
+            css={css`
+              position: relative;
+              width: 75%;
+              max-width: 1341px;
+              margin: auto;
+            `}
+          >
+            <Playlist onPlay={onPlay} data={data} />
+            <Player
+              onPlay={onPlay}
+              onPause={onPause}
+              is_paused={is_paused}
+              current_track={current_track}
+            />
+          </div>
         </div>
-      </div>
-    )
+      )}
+    </div>
   );
 };
 
